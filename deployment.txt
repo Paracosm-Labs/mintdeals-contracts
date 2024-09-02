@@ -36,13 +36,13 @@ MintDeals Core NILE
     *(base58) TBYUoQBwcNqyVKH6g4b3hYVL28tSngSZPx
 
   CreditManager: 3m E + 18k B
-    (base58) TZCfnQXU7ZAJQR3XWPXwskRRWtSBZ9kiV7
+    (base58) TUkVqNEanDb4pcTPchFAtHYsAUCg6jz2a6
 
   MintDealsNFT: 2.7m E + 17k B
     (base58) TBRGzYyDtaUfyz7rYbNGbS8QLKhVHs3k5p
 
   ClubDealRegistry: 5m E + 28k B
-    (base58) TCEUP1VM6pqVWdvi82kLZ4mWE9M9x2ghEr
+    (base58) TUQC1eGtkn9QV7xdtZE2GsWM6qcg5EmBdt
 
 
 //////////////

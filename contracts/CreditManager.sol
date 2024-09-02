@@ -17,6 +17,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         uint256 creditBalanceUsed;   // Amount already borrowed by the user
         uint256 lastUpdateBlock;     // The last block when interest was accrued
         uint256 lastRepaymentBlock;  // Block number of the last repayment
+        uint256 boostFactor;         // Multiplier for user's borrowing capacity (default is 1)
     }
 
     // Mapping from user address to their CreditInfo
@@ -93,6 +94,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     function initializeCreditInfo(address user) internal {
         userCredits[user].creditScore = BASELINE_SCORE;
         userCredits[user].creditBalanceUsed = 0;
+        userCredits[user].boostFactor = 1;
     }
 
     // Register User within Credit Manager
@@ -152,7 +154,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         _accrueInterest(cTokenAddress, msg.sender);
 
         // Calculate the user's current borrowing capacity based on their credit score
-        uint256 maxBorrowable = calculateBorrowingCapacity(creditInfo.creditScore);
+        uint256 maxBorrowable = calculateBorrowingCapacity(msg.sender);
 
         // Ensure the borrow request adheres to the user's borrowing capacity and global limits
         require(amount + creditInfo.creditBalanceUsed <= maxBorrowable, "Borrow amount exceeds your borrowing capacity");
@@ -289,9 +291,13 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
      * @param user Address of the user whose credit score is being updated.
      * @param scoreStep The amount by which to increase or decrease the user's credit score.
      * @param increase A boolean value indicating whether to increase (true) or decrease (false) the user's credit score.
+     * @param newBoostFactor Optional new boost factor for the user (set to 0 to keep the current boost factor).
      */
-    function setCreditScore(address user, uint256 scoreStep, bool increase) external onlyAdmin(msg.sender) {
+    function setCreditScore(address user, uint256 scoreStep, bool increase, uint256 newBoostFactor) external onlyAdmin(msg.sender) {
         _setCreditScore(user, scoreStep, increase);
+        if (newBoostFactor > 0) {
+            userCredits[user].boostFactor = newBoostFactor;
+        }
     }
 
        
@@ -381,24 +387,31 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     }
 
 
-    /** 
-     * @notice This function calculates the borrowing capacity of a user based on their credit score.
-     * Each point of credit score allows borrowing of borrowing multiplier basis point units.
-     * @dev The calculation is performed by multiplying the credit score with the borrowing multiplier in basis points and dividing it by 10,000 (as there are 10,000 basis points).
-     * @param creditScore The user's current credit score.
-     * @return Returns the maximum amount that can be borrowed based on the user's credit score and borrowing multiplier.
+    /**
+     * @notice Internal function to calculate the borrowing capacity of a user based on their credit score and boost factor.
+     * @param user Address of the user whose borrowing capacity is being calculated.
+     * @return Returns the maximum amount that can be borrowed based on the user's credit score, borrowing multiplier, and boost factor.
      */
-    function calculateBorrowingCapacity(uint256 creditScore) internal view returns (uint256) {
-        return creditScore * borrowingMultiplierBP / 10000;
+    function calculateBorrowingCapacity(address user) internal view returns (uint256) {
+        CreditInfo storage creditInfo = userCredits[user];
+        return (creditInfo.creditScore * borrowingMultiplierBP * creditInfo.boostFactor * 1e18) / 10000;
     }
 
 
     // Views
 
-    // Retrieve the credit score and limit of a user
-    function getCreditInfo(address user) external view returns (uint256 score, uint256 creditBalanceUsed) {
-        score = userCredits[user].creditScore;
-        creditBalanceUsed = userCredits[user].creditBalanceUsed;
-        return (score, creditBalanceUsed);
+    /**
+     * @notice Retrieve the credit score, credit balance used, and borrowing capacity of a user.
+     * @param user Address of the user.
+     * @return score The user's current credit score.
+     * @return creditBalanceUsed The user's current credit balance used.
+     * @return borrowingCapacity The maximum amount that can be borrowed by the user based on their credit score and boost factor.
+     */
+    function getCreditInfo(address user) external view returns (uint256 score, uint256 creditBalanceUsed, uint256 borrowingCapacity) {
+        CreditInfo storage creditInfo = userCredits[user];
+        score = creditInfo.creditScore;
+        creditBalanceUsed = creditInfo.creditBalanceUsed;
+        borrowingCapacity = calculateBorrowingCapacity(user);
+        return (score, creditBalanceUsed, borrowingCapacity);
     }
 }
