@@ -1,0 +1,76 @@
+/////////////////
+MOCKS+STUBS NILE
+/////////////////  
+  USDD: 
+    (base58) THJ6CYd8TyNzHFrdLTYQ1iAAZDrf5sEsZU
+  
+  USDDCErc20Stub:
+    (base58) TFHCj6iBHphhXAF9HesyPvx2XsW58Jx9wC
+
+  NileBTCStub:
+    (base58) TXyztoMgR4sqRtPw8mMTdJzdMdgoGrBh8r
+
+  gBTCCErc20Stub:
+    (base58) TKtDJwK75N7ZKNJsZveLfaN5Kfdh4W6DRm
+
+  ComptrollerStub:
+    (base58) TP1AjHBxZY5fzHAYeZD7PkeG7vpbtUP6BJ
+
+  MerkleDistributorStub:
+    (base58) TCMQperzgAFksDWp8bESrbJr6verPiGY61
+
+Wink PriceOracles: 
+BTC-USD - TAX8Pm3FgN74za72TFZrn5gPBxJTKgnnpE
+USDD-USD - TX264fxRmdhNfUgkruk9orzAVvtCehyowq
+USDT-USD - TT2ETLY1Mmx2DKYT9S6fMvKGPqbWH3LDEJ
+
+////////////
+MintDeals Core NILE
+~15m Energy + 88k Bandwidth = ~6389 TRX Burn ($1023) || ~3088 TRX rent ($495)
+////////////
+  CreditFacility: 4.3m E + 25k B
+    (base58) TZ2rY3SH99i69kCDrbZGbn5X9AVBV1KiyC
+
+  CreditManager: 3m E + 18k B
+    (base58) TDqqWfdWSHu5qNnBiLVRdpSRshNx7oCQwp
+
+  MintDealsNFT: 2.7m E + 17k B
+    (base58) TEJ6sxqTz96DMn9ikx6C2amkkq9ycqFP37
+
+  ClubDealRegistry: 5m E + 28k B
+    (base58) TNQxpZ1gocLmL2sDBnWuEcXydeskKz4qwy
+
+
+//////////////
+MintDeals Core Mainnet
+//////////////
+
+SOON...
+
+
+//////////////
+External Contracts Mainnet
+//////////////
+Wink PriceOracles
+BTC-USD	    TQoijQ1iZKRgJsAAWNPMu6amgtCJ3WMUV7
+USDT-USD	TKePc46n5CiUCR8LL788TFeKA4kjvNnuem
+USDD-USD	TJ7jEgoYVaeymVfYZ3bS57dYArwVDS1mhW
+
+JustLend  Mainnet
+USDT CErc20Delegator:TXJgMdjVX5dKiQaUi9QobwNxtSQaFqccvd
+USDD CErc20Delegator:TX7kybeP6UwTBRHLNPYmswFESHfyjm9bAS
+BTC CErc20Delegator: TLeEu311Cbw63BcmMHDgDLu7fnk9fqGcqT
+Comptroller: TB23wYojvAsSx6gR8ebHiBqwSeABiBMPAr
+merkleDistributor: TQoiXqruw4SqYPwHAd6QiNZ3ES4rLsejAj
+
+Token Assets
+USDT TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
+USDD TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn
+BTC TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9
+
+SunRouter
+Mainnet: TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9
+Nile testnet: TB6xBCixqRPUSKiXb45ky1GhChFJ7qrfFj
+
+Dominica DID
+Mainnet: TNURfT4XG9hoBiz6r95Z5pemDeuxzaeCTJ
