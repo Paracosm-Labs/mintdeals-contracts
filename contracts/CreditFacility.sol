@@ -438,7 +438,6 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
 
             // Fetch the amount of underlying asset deposited by the user
             uint256 collateralAmount = userInfo.amountDeposited;
-            require(collateralAmount > 0, "No collateral deposited");
 
             // Fetch the latest price from the oracle
             int256 rawPrice = cTokenInfo.priceOracle.latestAnswer();

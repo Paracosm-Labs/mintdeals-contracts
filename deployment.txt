@@ -1,17 +1,17 @@
 run: tronbox --download-compiler 0.8.20
 /////////////////
 MOCKS+STUBS NILE
-/////////////////  
+/////////////////
   USDD: 
     (base58) THJ6CYd8TyNzHFrdLTYQ1iAAZDrf5sEsZU
   
-  USDDCErc20Stub:
+  USDDCErc20Stub(CTokenAddress):
     (base58) TFHCj6iBHphhXAF9HesyPvx2XsW58Jx9wC
 
   NileBTCStub:
     (base58) TXyztoMgR4sqRtPw8mMTdJzdMdgoGrBh8r
 
-  gBTCCErc20Stub:
+  gBTCCErc20Stub(CTokenAddress):
     (base58) TKtDJwK75N7ZKNJsZveLfaN5Kfdh4W6DRm
 
   ComptrollerStub:
@@ -33,16 +33,16 @@ MintDeals Core NILE
 ~15m Energy + 88k Bandwidth = ~6389 TRX Burn ($1023) || ~3088 TRX rent ($495)
 ////////////
   CreditFacility: 4.3m E + 25k B
-    (base58) TRzQJkSGYVTRjoyqa9j4JgY1AwXrc4B1Tx
+    *(base58) TBYUoQBwcNqyVKH6g4b3hYVL28tSngSZPx
 
   CreditManager: 3m E + 18k B
-    (base58) TH2MytKjZJ2db7y1vz2HRhtqbS97vSzzz7
+    (base58) TZCfnQXU7ZAJQR3XWPXwskRRWtSBZ9kiV7
 
   MintDealsNFT: 2.7m E + 17k B
-    (base58) TKYuyPsrZHyzy6DY3QFvL7PtXFnccYjP2Z
+    (base58) TBRGzYyDtaUfyz7rYbNGbS8QLKhVHs3k5p
 
   ClubDealRegistry: 5m E + 28k B
-    (base58) TK9M1G7diivBmhnhm8eGTR9ziSdWKRQJ17
+    (base58) TCEUP1VM6pqVWdvi82kLZ4mWE9M9x2ghEr
 
 
 //////////////
