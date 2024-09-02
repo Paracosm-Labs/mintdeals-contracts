@@ -25,6 +25,9 @@ BTC-USD - TAX8Pm3FgN74za72TFZrn5gPBxJTKgnnpE
 USDD-USD - TX264fxRmdhNfUgkruk9orzAVvtCehyowq
 USDT-USD - TT2ETLY1Mmx2DKYT9S6fMvKGPqbWH3LDEJ
 
+SunRouter
+Nile testnet: TB6xBCixqRPUSKiXb45ky1GhChFJ7qrfFj
+
 ////////////
 MintDeals Core NILE
 ~15m Energy + 88k Bandwidth = ~6389 TRX Burn ($1023) || ~3088 TRX rent ($495)
@@ -71,7 +74,6 @@ BTC TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9
 
 SunRouter
 Mainnet: TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9
-Nile testnet: TB6xBCixqRPUSKiXb45ky1GhChFJ7qrfFj
 
 Dominica DID
 Mainnet: TNURfT4XG9hoBiz6r95Z5pemDeuxzaeCTJ
