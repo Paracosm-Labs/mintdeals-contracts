@@ -1,3 +1,4 @@
+run: tronbox --download-compiler 0.8.20
 /////////////////
 MOCKS+STUBS NILE
 /////////////////  
