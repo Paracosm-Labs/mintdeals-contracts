@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./AdminAuth.sol";
 import "./CreditManager.sol";
-import "./interfaces/ISunRouter.sol";
 import "./interfaces/ICreditFacility.sol";
 import "./interfaces/ICreditManager.sol";
 import "./interfaces/IMintDealsNFT.sol";
@@ -47,7 +46,6 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     ICreditFacility public creditFacility; // Reference to the CreditFacility contract
     ICreditManager public creditManager; // Reference to the CreditManager contract
     IMintDealsNFT public mintDealsNFT; // Address of the MintDealsNFT contract
-    ISunRouter public sunRouter; // Reference to Sun Router
 
     // club counter
     uint256 private nextClubId;
@@ -65,19 +63,16 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     event ClubUpdated(uint256 indexed clubId, uint256 membershipFee, bool active);
     event DealCreated(uint256 indexed clubId, uint256 indexed dealId, uint256 maxSupply, uint256 expiryDate, string metadataURI);
     event DealRedemptionConfirmed(uint256 indexed clubId, uint256 indexed dealId, address indexed member);
-    event SwappedViaSunRouter(address[] path, uint256[] amountsOut);
     event SwappedViaCEX(address tokenIn, address tokenOut, uint256 amountOut, address to);
     event txnExecuted(string txnHash);
 
     constructor(
         address _creditFacilityAddress, 
         address _creditManagerAddress,
-        address _mintDealsNFTAddress,
-        address _sunRouter) {
+        address _mintDealsNFTAddress) {
         creditFacility = ICreditFacility(_creditFacilityAddress); // Initialize the reference to the credit facility contract
         creditManager = ICreditManager(_creditManagerAddress); // Initialize the reference to the credit manager contract
         mintDealsNFT = IMintDealsNFT(_mintDealsNFTAddress); // Initialize the MintDealsNFT address
-        sunRouter = ISunRouter(_sunRouter);  // Initialize the Sun Router address
     }
    
    // Only club owner can perform certain actions
@@ -335,61 +330,10 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         collectedFees = 0; // Reset the collected fees after withdrawal
     }
 
-    //// DEX and CEX Swapping
-    // Struct for swapping via Sun Router
-    struct SwapParams {
-        address[] path;
-        string[] poolVersion;
-        uint256[] versionLen;
-        uint24[] fees;
-        SwapData data;
-    }
+    //// External Swapping
 
     /**
-     * @notice Swap tokens using the Sun Router and supply to CreditFacility->JL on behalf of a specific address.
-     * @param swapParams Struct containing swap parameters including path, poolVersion, versionLen, fees, and SwapData.
-     * @return amountsOut An array of amounts corresponding to the amount of tokenOut received for each step of the swap path.
-     */
-    function swapViaSunRouterAndSupply(
-        SwapParams calldata swapParams
-    ) external nonReentrant onlyAdmin(msg.sender) returns (uint256[] memory amountsOut) {
-
-        if (swapParams.data.amountIn >= transferThreshold) {
-            require(IERC20(swapParams.path[0]).approve(address(sunRouter), swapParams.data.amountIn), "TokenIn Approval failed");
-
-            address cTokenAddress = creditFacility.getCTokenAddress(swapParams.path[swapParams.path.length - 1]);
-            require(cTokenAddress != address(0), "cToken not found for tokenOut");
-
-            // Perform the swap
-            amountsOut = sunRouter.swapExactInput(
-                swapParams.path,
-                swapParams.poolVersion,
-                swapParams.versionLen,
-                swapParams.fees,
-                SwapData({
-                    amountIn: swapParams.data.amountIn,
-                    amountOutMin: swapParams.data.amountOutMin,
-                    to: address(this),  // Tokens come to the contract itself first
-                    deadline: swapParams.data.deadline
-                })
-            );
-
-            // Check if the swap was successful and the output amount is greater than the minimum amount required for the swap to succeed
-            require(amountsOut[amountsOut.length - 1] >= swapParams.data.amountOutMin, "Insufficient output amount");
-            
-            require(IERC20(swapParams.path[swapParams.path.length - 1]).approve(address(creditFacility), amountsOut[amountsOut.length - 1]), "TokenOut Approval failed");
-
-            // Supply the Asset to credit facility->JL on behalf of the credit manager
-            creditFacility.supplyAsset(cTokenAddress, amountsOut[amountsOut.length - 1], address(creditManager));
-
-            emit SwappedViaSunRouter(swapParams.path, amountsOut);
-        }
-
-        return amountsOut;
-    }
-
-    /**
-     * @notice Swap tokens using a CEX and supply to CreditFacility->JL on behalf of a specific address.
+     * @notice Withdraw to swap tokens using a CEX/DEX for supplying to CreditFacility->JL.
      * @param tokenIn The address of the input token.
      * @param tokenOut The address of the output token.
      * @param to The address to receive the tokens.
