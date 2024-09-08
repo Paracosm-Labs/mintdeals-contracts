@@ -20,6 +20,7 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
 
     event NFTMinted(address recipient, uint256 tokenId, uint256 dealId, string metadataURI);
     event NFTRedeemed(uint256 tokenId, uint256 dealId);
+    event RedeemRequest(address holder, uint256 tokenId);
     event RoyaltyInfoUpdated(address recipient, uint96 percentage);
 
     /**
@@ -56,11 +57,7 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
      * @param metadataURI The URI containing metadata for the NFT.
      * @return tokenId The ID of the newly minted NFT.
      */
-    function mintNFT(
-        address recipient,
-        uint256 dealId,
-        string memory metadataURI
-    ) external onlyAdmin(msg.sender) returns (uint256) {
+    function mintNFT(address recipient, uint256 dealId, string memory metadataURI) external onlyAdmin(msg.sender) returns (uint256) {
         uint256 tokenId = nextTokenId++;
         _mint(recipient, tokenId);
         _setTokenURI(tokenId, metadataURI);
@@ -81,6 +78,8 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
     function requestRedemption(uint256 tokenId) external {
         require(ownerOf(tokenId) == msg.sender, "Not the token owner");
         redemptionRequests[tokenId] = true;
+
+        emit RedeemRequest(msg.sender, tokenId);
     }
 
     /**

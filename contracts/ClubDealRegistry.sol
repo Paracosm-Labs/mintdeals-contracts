@@ -2,6 +2,7 @@
 pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./AdminAuth.sol";
 import "./CreditManager.sol";
@@ -102,18 +103,21 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         splitToCreditFacility = _split;
     }
 
-    /// @notice Create a new club
-    function createClub(address _paymentTokenAddress, uint256 _membershipFee, bool _sendToCreditFacility) public nonReentrant returns(uint256) {
+   /// @notice Create a new club
+    function createClub(address _paymentTokenAddress, uint256 _membershipFee, bool _sendToCreditFacility) public nonReentrant returns (uint256) {
         // Check if the token is supported by CreditFacility
         address cTokenAddress = creditFacility.getCTokenAddress(_paymentTokenAddress);
         require(cTokenAddress != address(0), "Unsupported token");
 
-        // Ensure the sender has enough stablecoin tokens to pay the creation fee
-        IERC20 token = IERC20(_paymentTokenAddress);    
-        require(token.balanceOf(msg.sender) >= clubCreationFee, "Insufficient balance to create club");
+        // Adjust the club creation fee based on the token's decimals
+        uint256 adjustedCreationFee = _adjustFeeForDecimals(_paymentTokenAddress, clubCreationFee);
+
+        // Ensure the sender has enough tokens to pay the creation fee
+        IERC20 token = IERC20(_paymentTokenAddress);
+        require(token.balanceOf(msg.sender) >= adjustedCreationFee, "Insufficient balance to create club");
 
         // Transfer the creation fee from the sender to the contract
-        require(token.transferFrom(msg.sender, address(this), clubCreationFee), "Fee transfer failed");
+        require(token.transferFrom(msg.sender, address(this), adjustedCreationFee), "Fee transfer failed");
 
         // Create the club
         uint256 clubId = nextClubId++;
@@ -126,7 +130,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         newClub.sendToCreditFacility = _sendToCreditFacility;
 
         // Update collected fees for the specific token
-        collectedFeesByToken[_paymentTokenAddress] += clubCreationFee;
+        collectedFeesByToken[_paymentTokenAddress] += adjustedCreationFee;
 
         // Register owner in Credit Manager
         creditManager.registerUser(msg.sender);
@@ -136,71 +140,68 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         return clubId;
     }
 
-
     /// @notice Add a member to a club with payment processing
     /// @param _clubId The ID of the club
     /// @param _newMember The address of the member to add
-    /// @param _paymentTokenAddress The payment token for joining club
+    /// @param _paymentTokenAddress The payment token for joining the club
     function addClubMember(uint256 _clubId, address _newMember, address _paymentTokenAddress) public nonReentrant {
         Club storage club = clubs[_clubId];
 
         // Check if the member is already part of the club
         require(!club.members[_newMember], "Member already exists in the club");
 
+        // Check if the club is active
+        require(club.active, "Club is not active");
+
         // Check if the token is supported by CreditFacility
         address cTokenAddress = creditFacility.getCTokenAddress(_paymentTokenAddress);
         require(cTokenAddress != address(0), "Unsupported token");
 
+        // Adjust membership fee based on token decimals
+        uint256 adjustedMembershipFee = _adjustFeeForDecimals(_paymentTokenAddress, club.membershipFee);
+
         // Ensure the sender has enough tokens to pay the membership fee
         IERC20 paymentToken = IERC20(_paymentTokenAddress);
-        require(paymentToken.balanceOf(msg.sender) >= club.membershipFee, "Insufficient balance to join club");
+        require(paymentToken.balanceOf(msg.sender) >= adjustedMembershipFee, "Insufficient balance to join club");
 
         // Transfer the membership fee from the sender to the contract
-        require(paymentToken.transferFrom(msg.sender, address(this), club.membershipFee), "Membership fee transfer failed");
+        require(paymentToken.transferFrom(msg.sender, address(this), adjustedMembershipFee), "Membership fee transfer failed");
 
-        uint256 amtToCreditFacility = club.membershipFee * splitToCreditFacility / 100;
-        uint256 amtToCreditManager = club.membershipFee - amtToCreditFacility;
+        uint256 amtToCreditFacility = adjustedMembershipFee * splitToCreditFacility / 100;
+        uint256 amtToCreditManager = adjustedMembershipFee - amtToCreditFacility;
 
         if (club.sendToCreditFacility) {
-            // Send the portion of membership fee to Credit Facility on behalf of club owner
-
-            // Get the current allowance
+            // Send the portion of membership fee to Credit Facility on behalf of the club owner
             uint256 currentAllowance = paymentToken.allowance(address(this), address(creditFacility));
-
-            // Check if the allowance is less than or equal to the amount
             if (currentAllowance <= amtToCreditFacility) {
-                // Approve unlimited
-                require(paymentToken.approve(address(creditFacility), type(uint256).max), "Approval for creditFacility failed");
+                require(paymentToken.approve(address(creditFacility), type(uint256).max), "Approval for Credit Facility failed");
             }
-
-            // Proceed with the supplyAsset call
             creditFacility.supplyAsset(cTokenAddress, amtToCreditFacility, club.owner);
 
             // Update splitForCreditManager
             splitForCreditManager[_paymentTokenAddress] += amtToCreditManager;
         } else {
             // Send portion of membership fee to the owner's wallet minus amount for Credit Manager + commission fee
-            uint256 commission = club.membershipFee * commissionFee / 100;
+            uint256 commission = adjustedMembershipFee * commissionFee / 100;
             uint256 newAmtToCreditManager = amtToCreditManager - commission;
 
-            // Transfer net amount to owner's wallet
-            require(paymentToken.transfer(club.owner, amtToCreditFacility), "Transfer to Club Owner failed");
+            require(paymentToken.transfer(club.owner, amtToCreditManager), "Transfer to Club Owner failed");
 
             // Update splitForCreditManager with the amount intended for Credit Facility
             splitForCreditManager[_paymentTokenAddress] += newAmtToCreditManager;
-            
-            // Update Collected fees
+
+            // Update collected fees
             collectedFeesByToken[_paymentTokenAddress] += commission;
         }
 
         // Accumulate the payment in splitForCreditManager
-        splitForCreditManager[_paymentTokenAddress] += club.membershipFee - amtToCreditFacility;
+        splitForCreditManager[_paymentTokenAddress] += amtToCreditManager;
 
         // Add member to club
         club.members[_newMember] = true;
         club.memberCount += 1;
 
-        emit MemberAdded(_clubId, _newMember, club.membershipFee);
+        emit MemberAdded(_clubId, _newMember, adjustedMembershipFee);
     }
 
     // updates club info
@@ -343,6 +344,19 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         collectedFeesByToken[_paymentTokenAddress] -= _amount;
     }
 
+    // Internal function to adjust fee based on token decimals
+    function _adjustFeeForDecimals(address _tokenAddress, uint256 _amount) internal view returns (uint256) {
+        IERC20Metadata token = IERC20Metadata(_tokenAddress);
+        uint8 tokenDecimals = token.decimals();
+
+        if (tokenDecimals == 6) {
+            return _amount / 1e12; // Adjust 18-decimal amount to 6-decimal format
+        } else if (tokenDecimals == 18) {
+            return _amount; // No adjustment needed for 18-decimal tokens
+        } else {
+            revert("Unsupported token decimals");
+        }
+    }
 
     //// External Swapping
 
@@ -353,11 +367,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     * @param to The address to receive the tokens.
     * @return amountOut The amount of tokens exiting registry.
     */
-    function swapViaEX(
-        address tokenIn,
-        address tokenOut,
-        address to
-    ) external nonReentrant onlyAdmin(msg.sender) returns (uint256 amountOut) {
+    function swapViaEX(address tokenIn, address tokenOut, address to) external nonReentrant onlyAdmin(msg.sender) returns (uint256 amountOut) {
         // Ensure there are funds available for swap
         require(splitForCreditManager[tokenIn] > 0, "No funds available for swap");
 

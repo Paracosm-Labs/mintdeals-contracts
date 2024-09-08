@@ -13,3 +13,4 @@ abiExtractor.js
 abi.js
 migrations/2_deploy_contracts.js
 tronbox.js
+contracts/functions.js

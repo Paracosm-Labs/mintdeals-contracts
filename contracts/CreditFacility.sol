@@ -351,7 +351,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     /**
     * @notice Calculate the total borrowing power of a specific user.
     * @param user The address of the user.
-    * @return The total borrowing power of the user.
+    * @return The total borrowing power of the user in 18 decimals.
     */
     function calculateTotalBorrowingPower(address user) external view returns (uint256) {
         uint256 stablecoinDeposits = 0;
@@ -366,18 +366,19 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
             if (cTokenInfo.isStablecoin) {
                 // Apply stablecoin collateral factor
                 stablecoinDeposits = userInfos[user][cTokenAddress].amountDeposited;
-                totalBorrowingPower += (stablecoinDeposits * stablecoinCollateralFactor) / 100;
+                // Get decimals to normalize to 18 decimals
+                uint8 decimals = IERC20Metadata(cTokenInfo.underlyingAsset).decimals();
+                uint256 normalizedStablecoinDeposits = _normalizeTo18Decimals(stablecoinDeposits, decimals);
+                totalBorrowingPower += (normalizedStablecoinDeposits * stablecoinCollateralFactor) / 100;
             } else {
                 // Get USD valuation of non-stablecoin and apply collateral factor
-                nonStablecoinDeposits =  this.getUserReserveValuation(cTokenAddress, user);
+                nonStablecoinDeposits = this.getUserReserveValuation(cTokenAddress, user);
                 totalBorrowingPower += (nonStablecoinDeposits * nonStablecoinCollateralFactor) / 100;
             }
         }
 
         return totalBorrowingPower;
     }
-
-
 
     /**
     * @notice Calculate the total amount of stablecoins borrowed by a user.
@@ -388,7 +389,10 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         for (uint i = 0; i < cTokenAddresses.length; i++) {
             address cTokenAddress = cTokenAddresses[i];
             if (cTokens[cTokenAddress].isStablecoin) {
-                totalUserStablecoinBorrows += userInfos[user][cTokenAddress].amountBorrowed;
+                uint256 amountBorrowed = userInfos[user][cTokenAddress].amountBorrowed;
+                // Get decimals to normalize to 18 decimals
+                uint8 decimals = IERC20Metadata(cTokens[cTokenAddress].underlyingAsset).decimals();
+                totalUserStablecoinBorrows += _normalizeTo18Decimals(amountBorrowed, decimals);
             }
         }
         return totalUserStablecoinBorrows;
@@ -421,7 +425,10 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
             UserInfo storage userInfo = userInfos[user][cTokenAddress];
             
             if (cTokens[cTokenAddress].isStablecoin) {
-                totalStablecoinDeposits += userInfo.amountDeposited;
+                // Normalize stablecoin deposits to 18 decimals
+                uint8 decimals = IERC20Metadata(cTokens[cTokenAddress].underlyingAsset).decimals();
+                uint256 normalizedDeposit = _normalizeTo18Decimals(userInfo.amountDeposited, decimals);
+                totalStablecoinDeposits += normalizedDeposit;
             } else {
                 nonStablecoinDeposits[index] = userInfo.amountDeposited;
                 index++;
@@ -431,6 +438,19 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         return (totalStablecoinDeposits, nonStablecoinDeposits);
     }
 
+    /**
+    * @notice Normalize a value to 18 decimals.
+    * @param amount The amount to be normalized.
+    * @param decimals The number of decimals of the token.
+    * @return The normalized amount in 18 decimals.
+    */
+    function _normalizeTo18Decimals(uint256 amount, uint8 decimals) internal pure returns (uint256) {
+        if (decimals >= 18) {
+            return amount * 10**(decimals - 18);
+        } else {
+            return amount / 10**(18 - decimals);
+        }
+    }
 
     /**
     * @notice Gets the valuation of a user's non-stablecoin asset deposits by fetching the amount deposited and current price.
