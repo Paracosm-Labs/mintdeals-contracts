@@ -118,7 +118,16 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     function supply(address tokenAddress, uint256 amount) external nonReentrant { 
         address cTokenAddress = creditFacility.getCTokenAddress(tokenAddress);
         require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount), "Transfer failed");
-        require(IERC20(tokenAddress).approve(address(creditFacility), amount), "Approval failed");
+
+        // Get the current allowance
+        uint256 currentAllowance = IERC20(tokenAddress).allowance(address(this), address(creditFacility));
+
+        // Check if the allowance is less than or equal to the amount
+        if (currentAllowance <= amount) {
+            // Approve unlimited
+            require(IERC20(tokenAddress).approve(address(creditFacility), type(uint256).max), "Approval for creditFacility failed");
+        }
+
         creditFacility.supplyAsset(cTokenAddress, amount, address(this));
         emit Supplied(tokenAddress, amount); 
     }
@@ -209,7 +218,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         uint256 netRepaymentAmount = repaymentAmount - deltaBPPortion;
 
         // Approve the net repayment amount for the credit facility
-        require(IERC20(tokenAddress).approve(address(creditFacility), netRepaymentAmount), "Approval failed");
+        // To optimize txn cost, spend pre-approval is handled in supply function
 
         // Forward the net repayment amount to the credit facility
         creditFacility.repayBorrow(cTokenAddress, netRepaymentAmount, address(this));
@@ -242,7 +251,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         repaymentFees -= amount;
 
         // Approve the amount for the credit facility
-        require(IERC20(tokenAddress).approve(address(creditFacility), amount), "Approval failed");
+        // To optimize txn cost, spend pre-approval is handled in supply function
 
         address cTokenAddress = creditFacility.getCTokenAddress(tokenAddress);
 

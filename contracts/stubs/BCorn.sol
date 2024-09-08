@@ -3,8 +3,8 @@ pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract NileBTCStub is ERC20 {
-    constructor() ERC20("NILESTUBBTC", "BTCStub") {}
+contract BCorn is ERC20 {
+    constructor() ERC20("NBCorn", "NBCORN") {}
 
     // Override the decimals function to return 8, like Bitcoin
     function decimals() public view virtual override returns (uint8) {

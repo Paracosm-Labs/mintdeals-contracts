@@ -2,17 +2,23 @@ run: tronbox --download-compiler 0.8.20
 /////////////////
 MOCKS+STUBS NILE
 /////////////////
-  USDD: 
+  USDD (18 decimals): 
     (base58) THJ6CYd8TyNzHFrdLTYQ1iAAZDrf5sEsZU
   
   USDDCErc20Stub(CTokenAddress):
-    (base58) TFHCj6iBHphhXAF9HesyPvx2XsW58Jx9wC
+    (base58) TBufD1hEmVMoUqLTcNLs1A4hLbmTb1EbQM
 
-  NileBTCStub:
-    (base58) TXyztoMgR4sqRtPw8mMTdJzdMdgoGrBh8r
+  USDT (6 decimals):
+    (base58) TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf
 
-  gBTCCErc20Stub(CTokenAddress):
-    (base58) TKtDJwK75N7ZKNJsZveLfaN5Kfdh4W6DRm
+  USDTCErc20Stub(CTokenAddress):
+    (base58) TLg8fPFHwhLQtQSZzgTGPwwD4cwhgzmcBU
+
+  BTC(BCorn) (8 decimals):
+    (base58) THpEd2KmMMbfA364Zkbk3kR5BVMdXZgzAa
+
+  BTCCErc20Stub(CTokenAddress):
+    (base58) TMqfRHmFYWbDyGHj3jEzw9LeXRCvjbDCt9
 
   ComptrollerStub:
     (base58) TP1AjHBxZY5fzHAYeZD7PkeG7vpbtUP6BJ
@@ -30,16 +36,16 @@ MintDeals Core NILE
 ~15m Energy + 88k Bandwidth = ~6389 TRX Burn ($1023) || ~3088 TRX rent ($495)
 ////////////
   CreditFacility: 4.3m E + 25k B
-    *(base58) TBYUoQBwcNqyVKH6g4b3hYVL28tSngSZPx
+    (base58) TQuvMzDUT3J3E3q7v8SaSdUsLPHTLEaHCs
 
   CreditManager: 3m E + 18k B
-    (base58) TUkVqNEanDb4pcTPchFAtHYsAUCg6jz2a6
+    (base58) TWJ8hrx3hxVhEfgWtv8jtQpH1XxQrMMPyj
 
   MintDealsNFT: 2.7m E + 17k B
-    (base58) TBRGzYyDtaUfyz7rYbNGbS8QLKhVHs3k5p
+    (base58) TQK2KXu1izC6T7MXKcpN7HpVwCkECfHqZW
 
   ClubDealRegistry: 5m E + 28k B
-    (base58) TUQC1eGtkn9QV7xdtZE2GsWM6qcg5EmBdt
+    (base58) TJ1oXagtAp7eoWiKtcZ55wwKSFCvizXeMK
 
 
 //////////////
@@ -71,3 +77,6 @@ BTC TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9
 
 Dominica DID
 Mainnet: TNURfT4XG9hoBiz6r95Z5pemDeuxzaeCTJ
+
+
+///////////////////

@@ -121,7 +121,14 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
 
         require(underlyingToken.transferFrom(msg.sender, address(this), amount), "Transfer from sender failed");
 
-        require(underlyingToken.approve(address(cTokenInfo.cToken), amount), "Approval for cToken failed");
+        // Get the current allowance
+        uint256 currentAllowance = underlyingToken.allowance(address(this), address(cTokenInfo.cToken));
+
+        // Check if the allowance is less than or equal to the amount
+        if (currentAllowance <= amount) {
+            // Approve unlimited
+            require(underlyingToken.approve(address(cTokenInfo.cToken), type(uint256).max), "Approval for cToken failed");
+        }
 
         require(cTokenInfo.cToken.mint(amount) == 0, "Minting cTokens failed");
 
@@ -144,12 +151,11 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     * @return Returns 0 on success.
     */
     function redeemAsset(address cTokenAddress, uint256 amount) external nonReentrant returns (uint256) {
-        // Fetch the user's info and the cToken info
         UserInfo storage userInfo = userInfos[msg.sender][cTokenAddress];
         CTokenInfo storage cTokenInfo = cTokens[cTokenAddress];
-        
+
         require(address(cTokenInfo.cToken) != address(0), "cToken not supported");
-        
+
         _accrueInterest(cTokenAddress, msg.sender);
 
         // Ensure the user has enough deposited to redeem
@@ -158,15 +164,16 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         // Calculate the total stablecoin borrows (across all assets)
         uint256 totalStablecoinBorrows = calculateTotalUserStablecoinBorrows(msg.sender);
 
-        // Temporarily reduce the user's amountDeposited by the amount they wish to redeem
+        // Temporarily reduce the user's deposited non-stable assets for calculation
         userInfo.amountDeposited -= amount;
 
-        // Calculate the new borrowing power after the redemption
+        // Calculate the new borrowing power after the redemption of non-stable assets
         uint256 newBorrowingPower = this.calculateTotalBorrowingPower(msg.sender);
 
-        // Revert the amountDeposited change if the user would become under-collateralized
+        // Revert the redemption if it would cause under-collateralization
+        // Non-stable assets like BTC should still be redeemable as long as new borrowing power covers outstanding stablecoin debt
         require(newBorrowingPower >= totalStablecoinBorrows, "Redemption would cause under-collateralization");
-        
+
         // Perform the actual redemption from the cToken contract
         require(cTokenInfo.cToken.redeemUnderlying(amount) == 0, "Redemption failed");
 
@@ -175,8 +182,9 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
 
         emit RedeemedAsset(msg.sender, cTokenAddress, amount);
 
-        return 0; // 0 = success
+        return 0; // success
     }
+
 
     /**
     * @notice Borrow a specific amount of the underlying asset from JustLend.
@@ -370,6 +378,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     }
 
 
+
     /**
     * @notice Calculate the total amount of stablecoins borrowed by a user.
     * @param user The address of the user whose borrows are to be calculated.
@@ -459,8 +468,6 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         }
         return 0;
     }
-
-
 
     /**
     * @notice Get the cToken address associated with a specific underlying token.
