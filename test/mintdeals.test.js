@@ -215,28 +215,29 @@ describe('MintDeals Contract Automation', function () {
   it('should create 2 Deals', async function () {
     // this.timeout(10000);
   
-    // Now create deals for each club
-    const currentTime = Math.floor(Date.now() / 1000); // Current timestamp
+    // // Now create deals for each club
 
-    // Create a deal in club 1
-    console.log('Creating deal in club 0');
-    await clubDealRegistry.createDeal(
-      0, // Club ID 1
-      1000, // Max supply of the deal
-      1758188985, // Expiry 18/9/2025
-      "ipfs://deal-metadata-1", // Metadata URI for deal 1
-      5 // Max mints per member
-    ).send();
+    // // Create a deal in club 1
+    // console.log('Creating deal in club 0');
+    // await clubDealRegistry.createDeal(
+    //   0, // Club ID 1
+    //   1000, // Max supply of the deal
+    //   1758188985, // Expiry 18/9/2025
+    //   "ipfs://deal-metadata-1", // Metadata URI for deal 1
+    //   5 // Max mints per member
+    // ).send();
+    // console.log('Deal created successfully.');
 
-    // Create a deal in club 2
-    console.log('Creating deal in club 1');
-    await clubDealRegistry.createDeal(
-      1, // Club ID 2
-      500, // Max supply of the deal
-      1758188985, // Expiry 18/9/2025
-      "ipfs://deal-metadata-2", // Metadata URI for deal 2
-      3 // Max mints per member
-    ).send();
+    // // Create a deal in club 2
+    // console.log('Creating deal in club 1');
+    // await clubDealRegistry.createDeal(
+    //   1, // Club ID 2
+    //   500, // Max supply of the deal
+    //   1758188985, // Expiry 18/9/2025
+    //   "ipfs://deal-metadata-2", // Metadata URI for deal 2
+    //   3 // Max mints per member
+    // ).send();
+    // console.log('Deal created successfully.');
   });
 
   it('should add a member to the club using USDD  and USDT as the payment tokens', async function () {
@@ -267,9 +268,9 @@ describe('MintDeals Contract Automation', function () {
   it('should execute score steps (borrow 4 + repay 6)', async function () {
     // this.timeout(10000);
     
-    // console.log('Executing ScoreSteps (Borrow 4, Repay 6)');
-    // await creditManager.setScoreSteps(4, 6).send();
-    // console.log('ScoreSteps executed (borrow 4 + repay 6)');
+    // console.log('Executing ScoreSteps (Borrow 6, Repay 4)');
+    // await creditManager.setScoreSteps(6, 4).send();
+    // console.log('ScoreSteps executed (borrow 6 + repay 4)');
   });
   
   it('should supply BTC with beneficiary as creditManagerAddress', async function () {
@@ -289,22 +290,28 @@ describe('MintDeals Contract Automation', function () {
     // console.log(`Global Max Credit Limit for BTC updated to ${globalCreditLimit.toString()}`);
   });
   
-  it('should borrow 200 USDT from CreditManager', async function () {
+  it('should borrow 20 USDD + 20 USDT from CreditManager', async function () {
     // this.timeout(10000);
   
-    // console.log('Borrowing 200 USDT');
-    // await creditManager.borrow(config.USDTAddress, await toSun(200, USDT_DECIMALS)).send();
-    // const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo}`);
+    // console.log('Borrowing 20 USDD');
+    // await creditManager.borrow(config.USDDAddress, await toSun(20, USDD_DECIMALS)).send();
+    // const creditInfo1 = await creditManager.getCreditInfo(config.Beneficiary1).call();
+    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo1}`);  
+    
+    // console.log('Borrowing 20 USDD');
+    // await creditManager.borrow(config.USDTAddress, await toSun(20, USDT_DECIMALS)).send();
+    // const creditInfo2 = await creditManager.getCreditInfo(config.Beneficiary1).call();
+    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo2}`);
+
   });
   
-  it('should repay 150 USDT to CreditManager', async function () {
+  it('should repay USDT to CreditManager', async function () {
     // this.timeout(10000);
   
-    // console.log('Repaying 150 USDT');
-    // await creditManager.repay(config.USDDAddress, await toSun(150, USDT_DECIMALS)).send();
+    // console.log('Repaying USDT');
+    // await creditManager.repay(config.USDTAddress, await toSun(20, USDT_DECIMALS)).send();
     // const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    // console.log(`150 USDD repaid. Credit Info is now ${creditInfo}`);
+    // console.log(`USDT repaid. Credit Info is now ${creditInfo}`);
   });
   
   // it('should allow admin to withdraw 1 BTC', async function () {

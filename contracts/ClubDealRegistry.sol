@@ -184,7 +184,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
             uint256 commission = adjustedMembershipFee * commissionFee / 100;
             uint256 newAmtToCreditManager = amtToCreditManager - commission;
 
-            require(paymentToken.transfer(club.owner, amtToCreditManager), "Transfer to Club Owner failed");
+            paymentToken.transfer(club.owner, amtToCreditManager);
 
             // Update splitForCreditManager with the amount intended for Credit Facility
             splitForCreditManager[_paymentTokenAddress] += newAmtToCreditManager;
@@ -326,7 +326,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         require(collectedAmount >= _amount, "Insufficient fees collected");
 
         IERC20 token = IERC20(_paymentTokenAddress);
-        require(token.transfer(msg.sender, _amount), "Fee transfer failed");
+        token.transfer(msg.sender, _amount);
 
         collectedFeesByToken[_paymentTokenAddress] -= _amount;
     }
@@ -362,7 +362,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         amountOut = splitForCreditManager[tokenIn];
 
         // Perform the token transfer
-        require(IERC20(tokenIn).transfer(to, amountOut), "Token transfer failed");
+        IERC20(tokenIn).transfer(to, amountOut);
 
         // Update accumulated balance
         splitForCreditManager[tokenIn] -= amountOut;

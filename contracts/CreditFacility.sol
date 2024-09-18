@@ -178,7 +178,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         require(cTokenInfo.cToken.redeemUnderlying(amount) == 0, "Redemption failed");
 
         // Transfer to requester
-        require(IERC20(cTokenInfo.underlyingAsset).transfer(msg.sender, amount), "Transfer failed");
+        IERC20(cTokenInfo.underlyingAsset).transfer(msg.sender, amount);
 
         emit RedeemedAsset(msg.sender, cTokenAddress, amount);
 
@@ -216,7 +216,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         require(cTokenInfo.cToken.borrow(amount) == 0, "Borrowing from cToken failed"); // response 0 == success
 
         // Transfer to requester
-        require(IERC20(cTokenInfo.underlyingAsset).transfer(msg.sender, amount), "Transfer failed");
+        IERC20(cTokenInfo.underlyingAsset).transfer(msg.sender, amount);
 
         // Update the user's borrowed amount and last update block for this stablecoin
         userInfo.amountBorrowed += amount; // Only stablecoins are borrowed

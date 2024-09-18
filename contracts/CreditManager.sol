@@ -143,7 +143,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     function withdraw(address tokenAddress, uint256 amount) external onlyAdmin(msg.sender) nonReentrant { 
         address cTokenAddress = creditFacility.getCTokenAddress(tokenAddress);
         creditFacility.redeemAsset(cTokenAddress, amount);
-        require(IERC20(tokenAddress).transfer(msg.sender, amount), "Transfer failed");
+        IERC20(tokenAddress).transfer(msg.sender, amount);
         emit Withdrawn(msg.sender, tokenAddress, amount);
     }  
 
@@ -173,7 +173,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         creditFacility.borrow(cTokenAddress, amount);
 
         // Transfer the borrowed amount to the user
-        require(IERC20(tokenAddress).transfer(msg.sender, amount), "Transfer failed");
+        IERC20(tokenAddress).transfer(msg.sender, amount);
 
         // Update the user's borrowed balance and total credit used in the accrueInterest function
         creditInfo.creditBalanceUsed += amount; // Just update the borrowed amount
@@ -273,7 +273,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         repaymentFees -= amount;
 
         // Transfer the amount to the admin address
-        require(IERC20(tokenAddress).transfer(to, amount), "Transfer failed");
+        IERC20(tokenAddress).transfer(to, amount);
 
         emit FeesWithdrawn(to, amount);
     }

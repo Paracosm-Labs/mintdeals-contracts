@@ -37,19 +37,19 @@ MintDeals Core NILE
 ////////////
   CreditFacility: 4.3m E + 25k B
     deprecated - (base58) TGkfXvbxssZv1B2vnWHjn5zHYtXWJr9chm
-    **new** (base58) TSvLhUSDAas7FLEipmbFLHHzUu2jwEhHrZ
+    **new** (base58) TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv
 
   CreditManager: 3m E + 18k B
     deprecated - (base58) TGCqr5gmEa4sDmEq7X6hjRKWM9QBQavTs5
-    **new** (base58) TMvX8GUGC5ZhhLdfEV7GhwMggxX7ZHr7HP
+    **new** (base58) TVpa8wW8nYhbubQNKiHwHZEqiUykwF8NRe
 
   MintDealsNFT: 3.2m E + 21k B
     deprecated - (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
-    **new** (base58) TJ7R6jQr3HbHSXcRKrARaGV5Y8X68AiAaP
+    **new**  (base58) TE4FxWnCArHmNowvkwQyj4UfSSQ7DfNx5H
 
   ClubDealRegistry: 2.4m E + 15k B
     deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
-    **new** (base58) TRMFqPLJfMLH2e2J7gaQ6fMa9zgrV8BeUL
+    **new** (base58) TW3yFVu2WzH2N1QmP8bWuX9vk1pEYbRB8f
 
 //////////////
 MintDeals Core Mainnet
