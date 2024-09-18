@@ -40,7 +40,6 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     }
 
     mapping(uint256 => Club) public clubs; // Maps each unique club ID to its corresponding Club struct, allowing for easy access and management of club details by ID.
-    mapping(uint256 => address[]) public clubMembers; // separate mapping for members
     mapping(uint256 => mapping(uint256 => Deal)) public clubDeals; // separate mapping for deals by club ID
     mapping(address => uint256) public splitForCreditManager; // Accumulated split of membership fees for CreditManager by supported token
     mapping(address => uint256) public collectedFeesByToken; // Mapping to store collected fees for each token address
@@ -296,18 +295,6 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
 
         emit DealRedemptionConfirmed(_clubId, _dealId, msg.sender);
     }
-
-    /// @notice Get the details of a deal
-    /// @param _clubId The ID of the club
-    /// @param _dealId The ID of the deal
-    /// @return metadataURI The URI of the deal metadata
-    /// @return uint256 The expiry date of the deal
-    /// @return uint256 The remaining supply of the deal
-    function getDealDetails(uint256 _clubId, uint256 _dealId) public view returns (string memory, uint256, uint256) {
-        Deal storage deal = clubs[_clubId].deals[_dealId];
-        return (deal.metadataURI, deal.expiryDate, deal.remainingSupply);
-    }
-
 
     /// @notice Get all clubs a user is a member of
     /// @param _user The address of the user

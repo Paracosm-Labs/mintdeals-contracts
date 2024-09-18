@@ -211,6 +211,34 @@ describe('MintDeals Contract Automation', function () {
     // console.log('Club 2 created successfully.');
   });
 
+
+  it('should create 2 Deals', async function () {
+    // this.timeout(10000);
+  
+    // Now create deals for each club
+    const currentTime = Math.floor(Date.now() / 1000); // Current timestamp
+
+    // Create a deal in club 1
+    console.log('Creating deal in club 0');
+    await clubDealRegistry.createDeal(
+      0, // Club ID 1
+      1000, // Max supply of the deal
+      1758188985, // Expiry 18/9/2025
+      "ipfs://deal-metadata-1", // Metadata URI for deal 1
+      5 // Max mints per member
+    ).send();
+
+    // Create a deal in club 2
+    console.log('Creating deal in club 1');
+    await clubDealRegistry.createDeal(
+      1, // Club ID 2
+      500, // Max supply of the deal
+      1758188985, // Expiry 18/9/2025
+      "ipfs://deal-metadata-2", // Metadata URI for deal 2
+      3 // Max mints per member
+    ).send();
+  });
+
   it('should add a member to the club using USDD  and USDT as the payment tokens', async function () {
     // this.timeout(10000);
   
@@ -218,19 +246,19 @@ describe('MintDeals Contract Automation', function () {
   
     // console.log(`Adding member ${memberAddress} to club with USDD as payment token`);
     // await clubDealRegistry.addClubMember(
-    //   1,    // ClubId
+    //   0,    // ClubId
     //   memberAddress,         // Member address
     //   config.USDDAddress   // Payment token is USDD
     // ).send();
     // console.log('Member added successfully with USDD.');
 
-    // console.log(`Adding member ${memberAddress} to club with USDT as payment token`);
+    // console.log(`Adding member ${memberAddress} to club with USDD as payment token`);
     // await clubDealRegistry.addClubMember(
-    //   3,    // ClubId
+    //   1,    // ClubId
     //   memberAddress,         // Member address
-    //   config.USDTAddress   // Payment token is USDT
+    //   config.USDDAddress   // Payment token is USDD
     // ).send();
-    // console.log('Member added successfully with USDT.');
+    // console.log('Member added successfully with USDD.');
 
   });
   

@@ -49,7 +49,7 @@ MintDeals Core NILE
 
   ClubDealRegistry: 2.4m E + 15k B
     deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
-    **new** (base58) TQBav73FK8fZ7LUyeiaaYVYYFw8XLZpSA2
+    **new** (base58) TRMFqPLJfMLH2e2J7gaQ6fMa9zgrV8BeUL
 
 //////////////
 MintDeals Core Mainnet
