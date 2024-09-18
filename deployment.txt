@@ -45,11 +45,11 @@ MintDeals Core NILE
 
   MintDealsNFT: 3.2m E + 21k B
     deprecated - (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
-    **new**  (base58) TE4FxWnCArHmNowvkwQyj4UfSSQ7DfNx5H
+    **new**  (base58) TS9xARwGCCDcH3roAFxWZHUk3p7kqKSJTK
 
   ClubDealRegistry: 2.4m E + 15k B
     deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
-    **new** (base58) TW3yFVu2WzH2N1QmP8bWuX9vk1pEYbRB8f
+    **new** (base58) TVgfJnd81kjFvJwxvcqWde4XeNiTVNt9n4
 
 //////////////
 MintDeals Core Mainnet

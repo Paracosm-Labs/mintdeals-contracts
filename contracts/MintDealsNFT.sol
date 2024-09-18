@@ -3,13 +3,14 @@ pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol"; // EIP-2981 implementation
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "./AdminAuth.sol";
 
 /**
  * @title MintDealsNFT
  * @dev ERC721 contract for MintDeals NFTs with off-chain validation and on-chain redemption.
  */
-contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
+contract MintDealsNFT is ERC721, ERC2981, IERC721Enumerable, AdminAuth {
     uint256 public nextTokenId;
     mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => uint256) public dealIds; // Mapping from tokenId to dealId
@@ -17,6 +18,12 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
 
     address public royaltyRecipient; // Admin-configured royalty recipient
     uint96 public royaltyPercentage; // Admin-configured royalty percentage (basis points)
+
+    // Token enumeration storage
+    uint256[] private _allTokens;
+    mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
+    mapping(uint256 => uint256) private _ownedTokensIndex;
+    mapping(uint256 => uint256) private _allTokensIndex;
 
     event NFTMinted(address recipient, uint256 tokenId, uint256 dealId, string metadataURI);
     event NFTRedeemed(uint256 tokenId, uint256 dealId);
@@ -33,6 +40,61 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
         nextTokenId = 1;
         royaltyRecipient = _initialRoyaltyRecipient;
         royaltyPercentage = _initialRoyaltyPercentage;
+    }
+
+    // IERC721Enumerable functions
+    function totalSupply() public view override returns (uint256) {
+        return _allTokens.length;
+    }
+
+    function tokenByIndex(uint256 index) public view override returns (uint256) {
+        require(index < totalSupply(), "Index out of bounds");
+        return _allTokens[index];
+    }
+
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view override returns (uint256) {
+        require(index < balanceOf(owner), "Index out of bounds");
+        return _ownedTokens[owner][index];
+    }
+
+    // Internal function to add a token to the allTokens array and update indices
+    function _addTokenToAllTokensEnumeration(uint256 tokenId) private {
+        _allTokensIndex[tokenId] = _allTokens.length;
+        _allTokens.push(tokenId);
+    }
+
+    // Internal function to add a token to an owner's list of tokens
+    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
+        _ownedTokensIndex[tokenId] = balanceOf(to) - 1;
+        _ownedTokens[to][_ownedTokensIndex[tokenId]] = tokenId;
+    }
+
+    // Internal function to remove a token from owner's list
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+        uint256 lastTokenIndex = balanceOf(from) - 1;
+        uint256 tokenIndex = _ownedTokensIndex[tokenId];
+
+        if (tokenIndex != lastTokenIndex) {
+            uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
+            _ownedTokens[from][tokenIndex] = lastTokenId;
+            _ownedTokensIndex[lastTokenId] = tokenIndex;
+        }
+
+        delete _ownedTokensIndex[tokenId];
+        delete _ownedTokens[from][lastTokenIndex];
+    }
+
+    // Internal function to remove a token from the allTokens array
+    function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
+        uint256 lastTokenIndex = _allTokens.length - 1;
+        uint256 tokenIndex = _allTokensIndex[tokenId];
+
+        uint256 lastTokenId = _allTokens[lastTokenIndex];
+        _allTokens[tokenIndex] = lastTokenId;
+        _allTokensIndex[lastTokenId] = tokenIndex;
+
+        delete _allTokensIndex[tokenId];
+        _allTokens.pop();
     }
 
     /**
@@ -65,6 +127,10 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
 
         // Set the royalty info for this token, using admin-configured values
         _setTokenRoyalty(tokenId, royaltyRecipient, royaltyPercentage);
+
+        // Add to enumerations
+        _addTokenToAllTokensEnumeration(tokenId);
+        _addTokenToOwnerEnumeration(recipient, tokenId);
 
         emit NFTMinted(recipient, tokenId, dealId, metadataURI);
         return tokenId;
@@ -128,9 +194,24 @@ contract MintDealsNFT is ERC721, ERC2981, AdminAuth {
     }
 
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @notice Returns the royalty information for a given token.
+     * @dev Overrides the default royaltyInfo function to use the admin-configured recipient and percentage.
+     * @param tokenId The ID of the token to query.
+     * @param salePrice The sale price of the token.
+     * @return receiver The royalty recipient address.
+     * @return royaltyAmount The royalty amount based on the sale price.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC2981) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    function royaltyInfo(uint256 tokenId, uint256 salePrice) public view override returns (address receiver, uint256 royaltyAmount) {
+        (receiver, royaltyAmount) = super.royaltyInfo(tokenId, salePrice);
+    }
+
+    /**
+     * @notice Supports multiple interfaces including IERC721Enumerable and ERC2981.
+     * @dev Required to support the IERC721Enumerable and ERC2981 standards.
+     * @param interfaceId The interface ID to check.
+     * @return True if the interface is supported, false otherwise.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC2981, ERC721, IERC165) returns (bool) {
+        return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
     }
 }

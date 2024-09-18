@@ -13,8 +13,8 @@ export const config = {
 
   CreditFacilityAddress: 'TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv',
   CreditManagerAddress: 'TVpa8wW8nYhbubQNKiHwHZEqiUykwF8NRe',
-  ClubDealRegistryAddress: 'TW3yFVu2WzH2N1QmP8bWuX9vk1pEYbRB8f',
-  MintDealsNFTAddress: 'TE4FxWnCArHmNowvkwQyj4UfSSQ7DfNx5H',
+  ClubDealRegistryAddress: 'TS9xARwGCCDcH3roAFxWZHUk3p7kqKSJTK',
+  MintDealsNFTAddress: 'TVgfJnd81kjFvJwxvcqWde4XeNiTVNt9n4',
 
   Beneficiary1: 'TDQrzEpWkw758CoLXTLJMpopB6RJAKoMJm',
 
