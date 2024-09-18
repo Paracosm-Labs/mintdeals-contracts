@@ -164,10 +164,10 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         // Calculate the total stablecoin borrows (across all assets)
         uint256 totalStablecoinBorrows = calculateTotalUserStablecoinBorrows(msg.sender);
 
-        // Temporarily reduce the user's deposited non-stable assets for calculation
+        // Reduce the user's deposited assets for calculation
         userInfo.amountDeposited -= amount;
 
-        // Calculate the new borrowing power after the redemption of non-stable assets
+        // Calculate the new borrowing power after the redemption of assets
         uint256 newBorrowingPower = this.calculateTotalBorrowingPower(msg.sender);
 
         // Revert the redemption if it would cause under-collateralization

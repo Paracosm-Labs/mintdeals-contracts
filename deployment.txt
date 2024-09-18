@@ -6,19 +6,19 @@ MOCKS+STUBS NILE
     (base58) THJ6CYd8TyNzHFrdLTYQ1iAAZDrf5sEsZU
   
   USDDCErc20Stub(CTokenAddress):
-    (base58) TBufD1hEmVMoUqLTcNLs1A4hLbmTb1EbQM
+    (base58) TPgnCN3BdRsfoRMZV7RfxNYoWeU19rUzRv
 
   USDT (6 decimals):
     (base58) TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf
 
   USDTCErc20Stub(CTokenAddress):
-    (base58) TLg8fPFHwhLQtQSZzgTGPwwD4cwhgzmcBU
+    (base58) TN3FDQy3neBuHtmhHdzXx9f1RBx2yPieEJ
 
   BTC(BCorn) (8 decimals):
     (base58) THpEd2KmMMbfA364Zkbk3kR5BVMdXZgzAa
 
   BTCCErc20Stub(CTokenAddress):
-    (base58) TMqfRHmFYWbDyGHj3jEzw9LeXRCvjbDCt9
+    (base58) TNsyfr43MfNK5CPmyagwRKDfypb1Ykfpbi
 
   ComptrollerStub:
     (base58) TP1AjHBxZY5fzHAYeZD7PkeG7vpbtUP6BJ
@@ -36,16 +36,20 @@ MintDeals Core NILE
 ~13m Energy + 80k Bandwidth = ~5541 TRX Burn ($848) || ~1640 TRX rent ($251)
 ////////////
   CreditFacility: 4.3m E + 25k B
-    (base58) TGkfXvbxssZv1B2vnWHjn5zHYtXWJr9chm
+    deprecated - (base58) TGkfXvbxssZv1B2vnWHjn5zHYtXWJr9chm
+    **new** (base58) TSvLhUSDAas7FLEipmbFLHHzUu2jwEhHrZ
 
   CreditManager: 3m E + 18k B
-    (base58) TGCqr5gmEa4sDmEq7X6hjRKWM9QBQavTs5
+    deprecated - (base58) TGCqr5gmEa4sDmEq7X6hjRKWM9QBQavTs5
+    **new** (base58) TMvX8GUGC5ZhhLdfEV7GhwMggxX7ZHr7HP
 
   MintDealsNFT: 3.2m E + 21k B
-    (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
+    deprecated - (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
+    **new** (base58) TJ7R6jQr3HbHSXcRKrARaGV5Y8X68AiAaP
 
   ClubDealRegistry: 2.4m E + 15k B
-    (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
+    deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
+    **new** (base58) TQBav73FK8fZ7LUyeiaaYVYYFw8XLZpSA2
 
 //////////////
 MintDeals Core Mainnet

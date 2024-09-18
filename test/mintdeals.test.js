@@ -9,8 +9,8 @@ const tronWeb = new TronWeb({
 });
 
 const USDD_DECIMALS = 18;
-const USDT_DECIMALS = 8;
-const BTC_DECIMALS = 6;
+const USDT_DECIMALS = 6;
+const BTC_DECIMALS = 8;
 
 async function getContract(address) {
   console.log(`Getting contract for address: ${address}`);
@@ -54,7 +54,7 @@ describe('MintDeals Contract Automation', function () {
 
 
   it('should approve credit facility and manager and registry to spend USDD and USDT and BTC', async function () {
-    this.timeout(10000);
+    // this.timeout(10000);
     
     // console.log('Approving USDD for CreditFacility');
     // await USDDAddress.approve(config.CreditFacilityAddress,  await toSun(9000, USDD_DECIMALS)).send();
@@ -72,6 +72,10 @@ describe('MintDeals Contract Automation', function () {
     // await USDDAddress.approve(config.CreditManagerAddress, await toSun(9000, USDD_DECIMALS)).send();
     // console.log('USDD approved for CreditManager');
 
+    // console.log('Approving USDT for CreditManager');
+    // await USDTAddress.approve(config.CreditManagerAddress, await toSun(2000, USDT_DECIMALS)).send();
+    // console.log('USDT approved for CreditManager');
+
     // console.log('Approving BTC for CreditManager');
     // await BTCAddress.approve(config.CreditManagerAddress, await toSun(10, BTC_DECIMALS)).send();
     // console.log('BTC approved for CreditManager');
@@ -86,35 +90,47 @@ describe('MintDeals Contract Automation', function () {
   });
 
   it('should add cToken info for USDD, USDT, BTC', async function () {
-    this.timeout(10000);
+    // this.timeout(10000);
 
-  //   console.log('Adding USDD cToken');
-  //   await creditFacility.addCToken(config.USDDCTokenAddress, config.USDDAddress, true, config.USDDOracle).send();
-  //   console.log('USDD cToken added');
+    // console.log('Adding USDD cToken');
+    // await creditFacility.addCToken(config.USDDCTokenAddress, config.USDDAddress, true, config.USDDOracle).send();
+    // console.log('USDD cToken added');
 
-  //   console.log('Adding USDT cToken');
-  //   await creditFacility.addCToken(config.USDTCTokenAddress, config.USDTAddress, true, config.USDTOracle).send();
-  //   console.log('USDT cToken added');
+    // console.log('Adding USDT cToken');
+    // await creditFacility.addCToken(config.USDTCTokenAddress, config.USDTAddress, true, config.USDTOracle).send();
+    // console.log('USDT cToken added');
 
-  //   console.log('Adding BTC cToken');
-  //   await creditFacility.addCToken(config.BTCCTokenAddress, config.BTCAddress, false, config.BTCOracle).send();
-  //   console.log('BTC cToken added');
+    // console.log('Adding BTC cToken');
+    // await creditFacility.addCToken(config.BTCCTokenAddress, config.BTCAddress, false, config.BTCOracle).send();
+    // console.log('BTC cToken added');
   });
 
   it('should supply assets and perform borrow/repay operations', async function() {
-    this.timeout(10000);
+    // this.timeout(10000);
 
     // console.log('Supplying USDD');
-    // await creditFacility.supplyAsset(config.USDDCTokenAddress, await toSun(1000, USDD_DECIMALS), config.Beneficiary1).send();
+    // await creditFacility.supplyAsset(config.USDDCTokenAddress, await toSun(100, USDD_DECIMALS), config.Beneficiary1).send();
     // console.log('USDD supplied');
 
     // console.log('Supplying USDT');
-    // await creditFacility.supplyAsset(config.USDTCTokenAddress, await toSun(400, USDT_DECIMALS), config.Beneficiary1).send();
+    // await creditFacility.supplyAsset(config.USDTCTokenAddress, await toSun(5, USDT_DECIMALS), config.Beneficiary1).send();
     // console.log('USDT supplied');
 
     // console.log('Supplying BTC');
-    // await creditFacility.supplyAsset(config.BTCCTokenAddress, "await toSun(1, BTC_DECIMALS), config.Beneficiary1).send();
+    // await creditFacility.supplyAsset(config.BTCCTokenAddress, await toSun(1, BTC_DECIMALS), config.Beneficiary1).send();
     // console.log('BTC supplied');
+
+    // console.log('Supplying USDD to Credit Manager');
+    // await creditManager.supply(config.USDDAddress, await toSun(10, USDD_DECIMALS)).send();
+    // console.log('USDD supplied to Credit Manager');
+
+    // console.log('Supplying USDT to Credit Manager');
+    // await creditManager.supply(config.USDTAddress, await toSun(10, USDT_DECIMALS)).send();
+    // console.log('USDT supplied to Credit Manager');
+
+    // console.log('Supplying BTC to Credit Manager');
+    // await creditManager.supply(config.BTCAddress, await toSun(1, BTC_DECIMALS)).send();
+    // console.log('BTC supplied to Credit Manager');
 
     // console.log('Enabling USDD as collateral');
     // await creditFacility.enableAsCollateral(config.USDDCTokenAddress).send();
@@ -129,15 +145,38 @@ describe('MintDeals Contract Automation', function () {
     // console.log('BTC enabled as collateral');
 
     // console.log('Borrowing USDD');
-    // await creditFacility.borrow(config.USDDCTokenAddress, await toSun(538, USDD_DECIMALS)).send();
+    // await creditFacility.borrow(config.USDDCTokenAddress, await toSun(5, USDD_DECIMALS)).send();
     // console.log('USDD borrowed');
 
+    // console.log('Borrowing USDT');
+    // await creditFacility.borrow(config.USDTCTokenAddress, await toSun(1, USDT_DECIMALS)).send();
+    // console.log('USDT borrowed');
+
     // console.log('Repaying USDD borrow');
-    // await creditFacility.repayBorrow(config.USDDCTokenAddress, await toSun(350, USDD_DECIMALS), config.Beneficiary1).send();
+    // await creditFacility.repayBorrow(config.USDDCTokenAddress, await toSun(2, USDD_DECIMALS), config.Beneficiary1).send();
     // console.log('USDD borrow repaid');
+
+    // console.log('Repaying USDT borrow');
+    // await creditFacility.repayBorrow(config.USDTCTokenAddress, await toSun(1, USDT_DECIMALS), config.Beneficiary1).send();
+    // console.log('USDT borrow repaid');
+
   });
 
   //ClubDealRegistry
+
+  it('should set the ClubDealRegistry as admin on MintDealsNFT and CreditManager', async function () {
+    // this.timeout(10000);
+  
+    // console.log(`Setting ClubDealRegistry as admin on CreditManager)`);
+    // await creditManager.setAdmin(config.ClubDealRegistryAddress).send();
+    // console.log('Admin set successfully.');  
+    
+    // console.log(`Setting ClubDealRegistry as admin on MintDealsNFT)`);
+    // await mintDealsNFT.setAdmin(config.ClubDealRegistryAddress).send();
+    // console.log('Admin set successfully.');
+  });
+  
+
   it('should set the club creation fee to $12 USDD', async function () {
     // this.timeout(10000);
   
@@ -172,7 +211,7 @@ describe('MintDeals Contract Automation', function () {
     // console.log('Club 2 created successfully.');
   });
 
-  it('should add a member to the club using USDD as the payment token', async function () {
+  it('should add a member to the club using USDD  and USDT as the payment tokens', async function () {
     // this.timeout(10000);
   
     // const memberAddress = 'TLHKdCL7MiwT73rBrq8TXnANZ4VKH1P3kt'; // Member's Tron address
@@ -187,7 +226,7 @@ describe('MintDeals Contract Automation', function () {
 
     // console.log(`Adding member ${memberAddress} to club with USDT as payment token`);
     // await clubDealRegistry.addClubMember(
-    //   2,    // ClubId
+    //   3,    // ClubId
     //   memberAddress,         // Member address
     //   config.USDTAddress   // Payment token is USDT
     // ).send();
@@ -197,47 +236,47 @@ describe('MintDeals Contract Automation', function () {
   
   
   //CreditManager
-  // it('should execute score steps (borrow 4 + repay 6)', async function () {
-  //   this.timeout(10000);
+  it('should execute score steps (borrow 4 + repay 6)', async function () {
+    // this.timeout(10000);
     
-  //   console.log('Executing ScoreSteps (Borrow 4, Repay 6)');
-  //   await creditManager.setScoreSteps(4, 6).send();
-  //   console.log('ScoreSteps executed (borrow 4 + repay 6)');
-  // });
-  
-  // it('should supply 1 BTC with beneficiary as creditManagerAddress', async function () {
-  //   this.timeout(10000);
-  
-  //   console.log('Supplying 1 BTC');
-  //   await creditFacility.supplyAsset(config.BTCCTokenAddress, await toSun(1, BTC_DECIMALS), config.CreditManagerAddress).send();
-  //   console.log('1 BTC supplied to CreditFacility on behalf of CreditManagerAddress');
-  // });
-  
-  // it('should update global max credit limit for BTC cToken', async function () {
-  //   this.timeout(10000);
-  
-  //   console.log('Updating Global Max Credit Limit for BTC cToken');
-  //   await creditManager.updateGlobalMaxCreditLimit(config.BTCCTokenAddress).send();
-  //   const globalCreditLimit = await creditManager.globalMaxCreditLimit().call();
-  //   console.log(`Global Max Credit Limit for BTC updated to ${globalCreditLimit.toString()}`);
-  // });
-  
-  it('should borrow 300 USDD from CreditManager', async function () {
-    this.timeout(10000);
-  
-    console.log('Borrowing 500 USDD');
-    await creditManager.borrow(config.USDDAddress, await toSun(500, USDD_DECIMALS)).send();
-    const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    console.log(`500 USDD borrowed - Credit Info is now ${creditInfo}`);
+    // console.log('Executing ScoreSteps (Borrow 4, Repay 6)');
+    // await creditManager.setScoreSteps(4, 6).send();
+    // console.log('ScoreSteps executed (borrow 4 + repay 6)');
   });
   
-  it('should repay 150 USDD to CreditManager', async function () {
-    this.timeout(10000);
+  it('should supply BTC with beneficiary as creditManagerAddress', async function () {
+    // this.timeout(10000);
   
-    console.log('Repaying 150 USDD');
-    await creditManager.repay(config.USDDAddress, await toSun(150, USDD_DECIMALS)).send();
-    const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    console.log(`150 USDD repaid. Credit Info is now ${creditInfo}`);
+    // console.log('Supplying 1 BTC');
+    // await creditFacility.supplyAsset(config.BTCCTokenAddress, await toSun(1, BTC_DECIMALS), config.CreditManagerAddress).send();
+    // console.log('1 BTC supplied to CreditFacility on behalf of CreditManagerAddress');
+  });
+  
+  it('should update global max credit limit for BTC cToken', async function () {
+    // this.timeout(10000);
+  
+    // console.log('Updating Global Max Credit Limit for BTC cToken');
+    // await creditManager.updateGlobalMaxCreditLimit(config.BTCCTokenAddress).send();
+    // const globalCreditLimit = await creditManager.globalMaxCreditLimit().call();
+    // console.log(`Global Max Credit Limit for BTC updated to ${globalCreditLimit.toString()}`);
+  });
+  
+  it('should borrow 200 USDT from CreditManager', async function () {
+    // this.timeout(10000);
+  
+    // console.log('Borrowing 200 USDT');
+    // await creditManager.borrow(config.USDTAddress, await toSun(200, USDT_DECIMALS)).send();
+    // const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
+    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo}`);
+  });
+  
+  it('should repay 150 USDT to CreditManager', async function () {
+    // this.timeout(10000);
+  
+    // console.log('Repaying 150 USDT');
+    // await creditManager.repay(config.USDDAddress, await toSun(150, USDT_DECIMALS)).send();
+    // const creditInfo = await creditManager.getCreditInfo(config.Beneficiary1).call();
+    // console.log(`150 USDD repaid. Credit Info is now ${creditInfo}`);
   });
   
   // it('should allow admin to withdraw 1 BTC', async function () {

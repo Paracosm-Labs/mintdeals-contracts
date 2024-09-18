@@ -26,8 +26,8 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     // Borrowing multiplier used to determine max borrowable in basis point. Eg. 20000 Represents 200% or x2.
     uint256 public borrowingMultiplierBP = 20000;
 
-    // Interest delta in basis points set by the CreditManager. Factors in external interest also. Default is 5.5%.
-    uint256 public interestDeltaBP = 550;
+    // Interest delta per block as a percentage
+    uint256 public interestDeltaPB = 420; // Example: 420 means the rate is scaled by 4.2
 
     // Admin-configurable global maximum credit limit valued in USD
     uint256 public globalMaxCreditLimit = 5000 * 10**18; // eg $5000
@@ -65,8 +65,8 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     event FeesWithdrawn(address to, uint256 amount);
 
     // Set the interest delta
-    function setInterestDeltaBP(uint256 _delta) external onlyAdmin(msg.sender) {
-        interestDeltaBP = _delta;
+    function setInterestDeltaPB(uint256 _delta) external onlyAdmin(msg.sender) {
+        interestDeltaPB = _delta;
     }
 
     // Set or update the maximum global credit limit
@@ -211,11 +211,14 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         // Transfer the repayment amount from the user to this contract
         require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), repaymentAmount), "Transfer failed");
 
-        // Calculate the deltaBP portion of the repayment
-        uint256 deltaBPPortion = (repaymentAmount * interestDeltaBP) / 10000;
+        // Calculate the deltaPB portion of the repayment
+        uint256 deltaPBPortion = (repaymentAmount * interestDeltaPB) / 10000;
 
-        // Subtract the deltaBP portion from the repayment amount
-        uint256 netRepaymentAmount = repaymentAmount - deltaBPPortion;
+        // Ensure deltaPBPortion does not exceed repaymentAmount
+        deltaPBPortion = deltaPBPortion > repaymentAmount ? repaymentAmount : deltaPBPortion;
+
+        // Subtract the deltaPB portion from the repayment amount
+        uint256 netRepaymentAmount = repaymentAmount - deltaPBPortion;
 
         // Approve the net repayment amount for the credit facility
         // To optimize txn cost, spend pre-approval is handled in supply function
@@ -228,7 +231,7 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         totalCreditUsed -= repaymentAmount;
 
         // Store the deltaBP portion in the repaymentFees variable
-        repaymentFees += deltaBPPortion;
+        repaymentFees += deltaPBPortion;
 
         // Recalculate the user's credit score after repayment
         _setCreditScore(msg.sender, repayScoreStep, true);
@@ -382,11 +385,11 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         // Get the borrow rate per block from the cToken
         uint256 borrowRatePerBlock = ICErc20(cTokenAddress).borrowRatePerBlock();
 
-        // Calculate interest accrued
-        uint256 interestAccrued = (creditInfo.creditBalanceUsed * borrowRatePerBlock * blocksElapsed) / 1e18;
+        // Apply the interestDeltaPB to the borrow rate per block
+        uint256 adjustedBorrowRatePerBlock = borrowRatePerBlock * (10000 + interestDeltaPB) / 10000;
 
-        // Apply interestDeltaBP adjustment (if any)
-        interestAccrued = (interestAccrued * (10000 + interestDeltaBP)) / 10000;
+        // Calculate interest accrued
+        uint256 interestAccrued = (creditInfo.creditBalanceUsed * adjustedBorrowRatePerBlock * blocksElapsed) / 1e18;
 
         // Update the user's credit balance with the accrued interest
         creditInfo.creditBalanceUsed += interestAccrued;

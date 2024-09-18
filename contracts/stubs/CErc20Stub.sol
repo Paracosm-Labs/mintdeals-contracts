@@ -8,7 +8,7 @@ contract CErc20Stub is ERC20 {
 
     mapping(address => uint256) private balances;
     mapping(address => uint256) private borrowBalances;
-    uint256 private exchangeRate = 101157211754378640359062362;
+    uint256 private exchangeRate = 103653122192127;
     uint256 private borrowRate = 1e16; // 1% per block
     uint256 private supplyRate = 5e15; // 0.5% per block
 
@@ -77,6 +77,7 @@ contract CErc20Stub is ERC20 {
     function repayBorrow(uint repayAmount) external returns (uint) {
         require(borrowBalances[msg.sender] >= repayAmount, "Insufficient borrow balance");
         borrowBalances[msg.sender] -= repayAmount;
+        underlyingAsset.transferFrom(msg.sender, address(this), repayAmount);
         return 0; // Success
     }
 
