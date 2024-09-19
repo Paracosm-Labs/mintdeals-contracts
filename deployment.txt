@@ -33,23 +33,23 @@ USDT-USD - TT2ETLY1Mmx2DKYT9S6fMvKGPqbWH3LDEJ
 
 ////////////
 MintDeals Core NILE
-~13m Energy + 80k Bandwidth = ~5541 TRX Burn ($848) || ~1640 TRX rent ($251)
+~8.3m Energy + 54k Bandwidth = ~3540 TRX Burn ($531) || ~830 TRX rent ($125)
 ////////////
-  CreditFacility: 4.3m E + 25k B
+  CreditFacility: 2.4m E + 15k B
     deprecated - (base58) TGkfXvbxssZv1B2vnWHjn5zHYtXWJr9chm
     **new** (base58) TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv
 
-  CreditManager: 3m E + 18k B
+  CreditManager: 1.8m E + 12k B
     deprecated - (base58) TGCqr5gmEa4sDmEq7X6hjRKWM9QBQavTs5
     **new** (base58) TVpa8wW8nYhbubQNKiHwHZEqiUykwF8NRe
 
-  MintDealsNFT: 3.2m E + 21k B
+  MintDealsNFT: 1.7m E + 12k B
     deprecated - (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
-    **new**  (base58) TS9xARwGCCDcH3roAFxWZHUk3p7kqKSJTK
+    **new**  (base58) TKxs8sdzE4hecXJqfvqAzoLVDMBknGmrtG
 
   ClubDealRegistry: 2.4m E + 15k B
     deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
-    **new** (base58) TVgfJnd81kjFvJwxvcqWde4XeNiTVNt9n4
+    **new** (base58) TJU7deU76F4YBNdd8GjrAYAs2zB2ockMM9
 
 //////////////
 MintDeals Core Mainnet

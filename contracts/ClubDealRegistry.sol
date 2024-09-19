@@ -300,11 +300,11 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     /// @param _user The address of the user
     /// @return uint256[] An array of club IDs the user is a member of
     function getClubsForMember(address _user) public view returns (uint256[] memory) {
-        uint256 clubCount = nextClubId - 1;
+        uint256 clubCount = nextClubId;
         uint256[] memory result = new uint256[](clubCount);
         uint256 counter = 0;
 
-        for (uint256 i = 1; i <= clubCount; i++) {
+        for (uint256 i = 0; i <= clubCount; i++) {
             if (clubs[i].members[_user]) {
                 result[counter] = i;
                 counter++;
