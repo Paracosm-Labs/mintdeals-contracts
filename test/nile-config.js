@@ -11,10 +11,10 @@ export const config = {
   USDDOracle: 'TX264fxRmdhNfUgkruk9orzAVvtCehyowq',
   USDTOracle: 'TT2ETLY1Mmx2DKYT9S6fMvKGPqbWH3LDEJ',
 
-  CreditFacilityAddress: 'TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv',
-  CreditManagerAddress: 'TXUJ98amn3AJKXhtihDD227pjGHyWr5Mc2',
-  ClubDealRegistryAddress: 'TL5Gm6CamFPaT8UU6uLJUGuAUZ1w8f9pFi',
-  MintDealsNFTAddress: 'TFuTw8b8WTFFtrcSPHki7UdtAiMRAwRXZP',
+  CreditFacilityAddress: 'TR5p4aky1nfWPS915EsYP5SDiFZfi5ZqcF',
+  CreditManagerAddress: 'TLjtr3FWcXRW48p4Kv2UP1offUPt95bk9H',
+  ClubDealRegistryAddress: 'TD9LY1bm48SunrayUQ1Jj18hTvNS4Zt1BZ',
+  MintDealsNFTAddress: 'TJA3WJWTs8GUrpLdEnzuQvDmBYCCtvD8Dt',
 
   Beneficiary1: 'TDQrzEpWkw758CoLXTLJMpopB6RJAKoMJm',
 

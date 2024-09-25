@@ -50,7 +50,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     // Events
     event SupplyAsset(address indexed cTokenAddress, uint amount, address recipient);
     event RedeemedAsset(address indexed user, address indexed cTokenAddress, uint amount);
-    event Repayment(address indexed borrower, address cTokenAddress, uint repaymentAmount);
+    event Repayment(address indexed borrower, address cTokenAddress, uint amount);
     event Borrowed(address indexed borrower, address cTokenAddress, uint amount);
 
     /**
@@ -445,10 +445,11 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     * @return The normalized amount in 18 decimals.
     */
     function _normalizeTo18Decimals(uint256 amount, uint8 decimals) internal pure returns (uint256) {
-        if (decimals >= 18) {
-            return amount * 10**(decimals - 18);
+        if (decimals < 18) {
+            // Scale up to 18 decimals
+            return amount * 10**(18 - decimals);
         } else {
-            return amount / 10**(18 - decimals);
+            return amount;
         }
     }
 
@@ -475,11 +476,9 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
             uint8 oraclePriceDecimals = cTokenInfo.priceOracle.decimals();
             uint8 tokenDecimals = IERC20Metadata(cTokenInfo.underlyingAsset).decimals();
 
-            // Normalize the price to 18 decimals
-            uint256 normalizedPrice = uint256(rawPrice) * (10 ** (18 - oraclePriceDecimals));
-
-            // Normalize the collateral amount to 18 decimals
-            uint256 normalizedCollateralAmount = collateralAmount * (10 ** (18 - tokenDecimals));
+            // Normalize the price and collateral amount using the normalizer function
+            uint256 normalizedPrice = _normalizeTo18Decimals(uint256(rawPrice), oraclePriceDecimals);
+            uint256 normalizedCollateralAmount = _normalizeTo18Decimals(collateralAmount, tokenDecimals);
 
             // Calculate the valuation
             valuation = (normalizedCollateralAmount * normalizedPrice) / 1e18; // Result in 18 decimals
@@ -488,6 +487,7 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
         }
         return 0;
     }
+
 
     /**
     * @notice Get the cToken address associated with a specific underlying token.

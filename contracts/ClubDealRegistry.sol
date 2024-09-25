@@ -268,7 +268,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
 
         // Mint the NFT and send it to the member
         string memory metadataURI = deal.metadataURI;
-        mintDealsNFT.mintNFT(msg.sender, _dealId, metadataURI);
+        mintDealsNFT.mintNFT(msg.sender, _clubId, _dealId, metadataURI);
 
         // Update deal status
         deal.remainingSupply -= 1;

@@ -25,10 +25,12 @@ contract MintDealsNFT is ERC721, ERC2981, IERC721Enumerable, AdminAuth {
     mapping(uint256 => uint256) private _ownedTokensIndex;
     mapping(uint256 => uint256) private _allTokensIndex;
 
-    event NFTMinted(address recipient, uint256 tokenId, uint256 dealId, string metadataURI);
-    event NFTRedeemed(uint256 tokenId, uint256 dealId);
-    event RedeemRequest(address holder, uint256 tokenId);
-    event RoyaltyInfoUpdated(address recipient, uint96 percentage);
+    // Events
+    event NFTMinted(address indexed recipient, uint256 indexed tokenId, uint256 indexed clubId, uint256 dealId, string metadataURI);
+    event NFTRedeemed(uint256 indexed tokenId, uint256 indexed dealId);
+    event RedeemRequest(address indexed holder, uint256 indexed tokenId);
+    event RoyaltyInfoUpdated(address indexed recipient, uint96 percentage);
+
 
     /**
      * @dev Constructor for the MintDealsNFT contract.
@@ -119,7 +121,7 @@ contract MintDealsNFT is ERC721, ERC2981, IERC721Enumerable, AdminAuth {
      * @param metadataURI The URI containing metadata for the NFT.
      * @return tokenId The ID of the newly minted NFT.
      */
-    function mintNFT(address recipient, uint256 dealId, string memory metadataURI) external onlyAdmin(msg.sender) returns (uint256) {
+    function mintNFT(address recipient, uint256 clubId, uint256 dealId, string memory metadataURI) external onlyAdmin(msg.sender) returns (uint256) {
         uint256 tokenId = nextTokenId++;
         _mint(recipient, tokenId);
         _setTokenURI(tokenId, metadataURI);
@@ -132,7 +134,7 @@ contract MintDealsNFT is ERC721, ERC2981, IERC721Enumerable, AdminAuth {
         _addTokenToAllTokensEnumeration(tokenId);
         _addTokenToOwnerEnumeration(recipient, tokenId);
 
-        emit NFTMinted(recipient, tokenId, dealId, metadataURI);
+        emit NFTMinted(recipient, tokenId, clubId, dealId, metadataURI);
         return tokenId;
     }
 
