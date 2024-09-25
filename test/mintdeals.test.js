@@ -296,12 +296,12 @@ describe('MintDeals Contract Automation', function () {
     // console.log('Borrowing 20 USDD');
     // await creditManager.borrow(config.USDDAddress, await toSun(20, USDD_DECIMALS)).send();
     // const creditInfo1 = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo1}`);  
+    // console.log(`20 USDD borrowed - Credit Info is now ${creditInfo1}`);  
     
-    // console.log('Borrowing 20 USDD');
+    // console.log('Borrowing 20 USDT');
     // await creditManager.borrow(config.USDTAddress, await toSun(20, USDT_DECIMALS)).send();
     // const creditInfo2 = await creditManager.getCreditInfo(config.Beneficiary1).call();
-    // console.log(`200 USDD borrowed - Credit Info is now ${creditInfo2}`);
+    // console.log(`20 USDT borrowed - Credit Info is now ${creditInfo2}`);
 
   });
   

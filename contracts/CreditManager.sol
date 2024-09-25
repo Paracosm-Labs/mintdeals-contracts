@@ -2,6 +2,7 @@
 pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "./interfaces/ICErc20.sol";
 import "./AdminAuth.sol";
 import "./interfaces/ICreditFacility.sol";
@@ -23,6 +24,15 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     // Mapping from user address to their CreditInfo
     mapping(address => CreditInfo) public userCredits;
 
+    // Struct for storing repayment fees specific to each token
+    struct TokenRepaymentInfo {
+        uint256 repaymentFees;       // Repayment fees accumulated for this token
+    }
+
+    // Mapping from token address to its TokenRepaymentInfo
+    mapping(address => TokenRepaymentInfo) public tokenRepaymentInfo;
+
+
     // Borrowing multiplier used to determine max borrowable in basis point. Eg. 20000 Represents 200% or x2.
     uint256 public borrowingMultiplierBP = 20000;
 
@@ -35,8 +45,8 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     // Admin-configuratble global credit factor - default 20%
     uint256 public globalCreditFactor = 20;
 
-    // Total credit limit allocated
-    uint256 public totalCreditUsed;
+    // Global credit limit allocated
+    uint256 public globalCreditUsed;
 
     // Credit Score steps for borrow+repay
     uint256 public borrowScoreStep;
@@ -44,9 +54,6 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
 
     //threshold of blocks passed since last repayment. default 864000 ~30 days
     uint256 public blocksPassedThreshold = 864000;
-
-    // Stores fees collected from repayments
-    uint256 public repaymentFees;
 
     // Reference to the CreditFacility contract
     ICreditFacility public creditFacility;
@@ -162,12 +169,18 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         // Accrue interest on the user's outstanding balance before borrowing
         _accrueInterest(cTokenAddress, msg.sender);
 
+        // Fetch the token's decimals
+        uint8 decimals = IERC20Metadata(tokenAddress).decimals();
+
+        // Calculate normalized amount if needed for other logic (e.g., interest)
+        uint256 normalizedAmount = _normalizeTo18Decimals(amount, decimals);
+
         // Calculate the user's current borrowing capacity based on their credit score
         uint256 maxBorrowable = calculateBorrowingCapacity(msg.sender);
 
         // Ensure the borrow request adheres to the user's borrowing capacity and global limits
         require(amount + creditInfo.creditBalanceUsed <= maxBorrowable, "Borrow amount exceeds your borrowing capacity");
-        require(amount + totalCreditUsed <= globalMaxCreditLimit, "Global credit limit exceeded");
+        require(amount + globalCreditUsed <= globalMaxCreditLimit, "Global credit limit exceeded");
 
         // Execute the borrow action in CreditFacility
         creditFacility.borrow(cTokenAddress, amount);
@@ -176,13 +189,13 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         IERC20(tokenAddress).transfer(msg.sender, amount);
 
         // Update the user's borrowed balance and total credit used in the accrueInterest function
-        creditInfo.creditBalanceUsed += amount; // Just update the borrowed amount
-        totalCreditUsed += amount; // Update the total credit used
+        creditInfo.creditBalanceUsed += normalizedAmount; // Just update the borrowed amount
+        globalCreditUsed += normalizedAmount; // Update the total credit used
         
         // Recalculate the user's credit score after borrowing
         _setCreditScore(msg.sender, borrowScoreStep, false);
 
-        emit Borrowed(msg.sender, amount);
+        emit Borrowed(msg.sender, normalizedAmount);
     }
 
 
@@ -198,9 +211,16 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
     function repay(address tokenAddress, uint256 repaymentAmount) external nonReentrant {
         address cTokenAddress = creditFacility.getCTokenAddress(tokenAddress);
         CreditInfo storage creditInfo = userCredits[msg.sender];
+        TokenRepaymentInfo storage tokenInfo = tokenRepaymentInfo[tokenAddress];
 
         // Accrue interest on the user's outstanding balance before repayment
         _accrueInterest(cTokenAddress, msg.sender);
+
+        // Fetch the token's decimals
+        uint8 decimals = IERC20Metadata(tokenAddress).decimals();
+
+        // Normalize the repayment amount to 18 decimals
+        uint256 normalizedAmount = _normalizeTo18Decimals(repaymentAmount, decimals);
 
         // Calculate the effective repayment amount
         uint256 outstandingBalance = creditInfo.creditBalanceUsed;
@@ -227,16 +247,16 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
         creditFacility.repayBorrow(cTokenAddress, netRepaymentAmount, address(this));
 
         // Update the user's credit balance used and total credit used
-        creditInfo.creditBalanceUsed -= repaymentAmount;
-        totalCreditUsed -= repaymentAmount;
+        creditInfo.creditBalanceUsed -= normalizedAmount;
+        globalCreditUsed -= normalizedAmount;
 
         // Store the deltaBP portion in the repaymentFees variable
-        repaymentFees += deltaPBPortion;
+        tokenInfo.repaymentFees += deltaPBPortion;
 
         // Recalculate the user's credit score after repayment
         _setCreditScore(msg.sender, repayScoreStep, true);
 
-        emit LoanRepayment(msg.sender, repaymentAmount);
+        emit LoanRepayment(msg.sender, normalizedAmount);
     }
 
     /** 
@@ -248,10 +268,11 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
      * @param amount The amount of tokens to be repaid.
      */
     function repayWithFees(address tokenAddress, uint256 amount) external onlyAdmin(msg.sender) nonReentrant {
-        require(amount <= repaymentFees, "Insufficient repayment fees available");
+        TokenRepaymentInfo storage tokenInfo = tokenRepaymentInfo[tokenAddress];
+        require(amount <= tokenInfo.repaymentFees, "Insufficient repayment fees available");
 
         // Reduce repayment fees before repayment
-        repaymentFees -= amount;
+        tokenInfo.repaymentFees -= amount;
 
         // Approve the amount for the credit facility
         // To optimize txn cost, spend pre-approval is handled in supply function
@@ -266,11 +287,12 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
 
     // Function for admin to withdraw fees
     function withdrawFees(address tokenAddress, uint256 amount, address to) external onlyAdmin(msg.sender) nonReentrant {
+        TokenRepaymentInfo storage tokenInfo = tokenRepaymentInfo[tokenAddress];
         // Ensure the requested amount does not exceed the repayment fees available
-        require(amount <= repaymentFees, "Insufficient repayment fees available");
+        require(amount <= tokenInfo.repaymentFees, "Insufficient repayment fees available");
 
         // Deduct the amount from repaymentFees
-        repaymentFees -= amount;
+        tokenInfo.repaymentFees -= amount;
 
         // Transfer the amount to the admin address
         IERC20(tokenAddress).transfer(to, amount);
@@ -360,7 +382,23 @@ contract CreditManager is AdminAuth, ReentrancyGuard {
             return scoreStep / 4; // Quarter the effect if significantly overdue
         }
     }
-    
+
+    /**
+    * @notice Normalize a value to 18 decimals.
+    * @param amount The amount to be normalized.
+    * @param decimals The number of decimals of the token.
+    * @return The normalized amount in 18 decimals.
+    */
+    function _normalizeTo18Decimals(uint256 amount, uint8 decimals) internal pure returns (uint256) {
+        if (decimals < 18) {
+            // Scale up to 18 decimals
+            return amount * 10**(18 - decimals);
+        } else {
+            return amount;
+        }
+    }
+
+
     /**
      * @notice This function is responsible for calculating and updating the interest accrued by a user based on their credit score.
      * It does this by first checking if it's the user's first time calling `accrueInterest`, in which case it sets the lastUpdateBlock to the current block number. 

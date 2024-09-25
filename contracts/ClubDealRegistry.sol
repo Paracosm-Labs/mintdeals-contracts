@@ -186,15 +186,12 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
 
             paymentToken.transfer(club.owner, amtToCreditManager);
 
-            // Update splitForCreditManager with the amount intended for Credit Facility
+            // Update splitForCreditManager with the amount intended for Credit Manager
             splitForCreditManager[_paymentTokenAddress] += newAmtToCreditManager;
 
             // Update collected fees
             collectedFeesByToken[_paymentTokenAddress] += commission;
         }
-
-        // Accumulate the payment in splitForCreditManager
-        splitForCreditManager[_paymentTokenAddress] += amtToCreditManager;
 
         // Add member to club
         club.members[_newMember] = true;

@@ -36,20 +36,19 @@ MintDeals Core NILE
 ~8.3m Energy + 54k Bandwidth = ~3540 TRX Burn ($531) || ~830 TRX rent ($125)
 ////////////
   CreditFacility: 2.4m E + 15k B
-    deprecated - (base58) TGkfXvbxssZv1B2vnWHjn5zHYtXWJr9chm
-    **new** (base58) TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv
+    (base58) TNmKSWRW4dxDR5JZdfzzM6mtaUPxZipPrv
 
   CreditManager: 1.8m E + 12k B
-    deprecated - (base58) TGCqr5gmEa4sDmEq7X6hjRKWM9QBQavTs5
-    **new** (base58) TVpa8wW8nYhbubQNKiHwHZEqiUykwF8NRe
+    (base58) TVpa8wW8nYhbubQNKiHwHZEqiUykwF8NRe
+    NEW (base58) TXUJ98amn3AJKXhtihDD227pjGHyWr5Mc2
 
   MintDealsNFT: 1.7m E + 12k B
-    deprecated - (base58) TX4MdEdDtx1nz4HdTTH5nNfBfcf6f8s2hC
-    **new**  (base58) TKxs8sdzE4hecXJqfvqAzoLVDMBknGmrtG
+    (base58) TKxs8sdzE4hecXJqfvqAzoLVDMBknGmrtG
+    NEW (base58) TFuTw8b8WTFFtrcSPHki7UdtAiMRAwRXZP
 
   ClubDealRegistry: 2.4m E + 15k B
-    deprecated - (base58) TSF2kjUqR83w52W7pzkd6bpFkFkEXN1BPH
-    **new** (base58) TJU7deU76F4YBNdd8GjrAYAs2zB2ockMM9
+    (base58) TJU7deU76F4YBNdd8GjrAYAs2zB2ockMM9
+    NEW (base58) TL5Gm6CamFPaT8UU6uLJUGuAUZ1w8f9pFi
 
 //////////////
 MintDeals Core Mainnet
