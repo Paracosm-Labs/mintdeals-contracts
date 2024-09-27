@@ -213,6 +213,12 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         return _clubId;
     }
 
+    // Function to get both the mint count and max mints for a member for a specific deal
+    function getMintStatus(uint256 _clubId, uint256 _dealId, address _member) external view returns (uint256 mintCount, uint256 maxMints) {
+        Deal storage deal = clubDeals[_clubId][_dealId];
+        return (deal.mintsPerMember[_member], deal.maxMintsPerMember);
+    }
+
 
     /// @notice Check if an address is a member of a club
     /// @param _clubId The ID of the club
