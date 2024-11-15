@@ -263,7 +263,7 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
     }
 
     // Function to mint a deal NFT for a club member
-    function mintDeal(uint256 _clubId, uint256 _dealId) external onlyClubMember(_clubId) {
+    function mintDeal(uint256 _clubId, uint256 _dealId) external nonReentrant onlyClubMember(_clubId) {
         // Ensure the deal exists and is active
         Deal storage deal = clubDeals[_clubId][_dealId];
         require(deal.expiryDate > block.timestamp, "Deal has expired");
@@ -279,6 +279,28 @@ contract ClubDealRegistry is AdminAuth, ReentrancyGuard{
         // Update deal status
         deal.remainingSupply -= 1;
         deal.mintsPerMember[msg.sender] += 1;
+
+    }
+
+    /**
+     * @notice Batch mints deal NFTs for a club
+     * @dev Only callable by club owner
+     * @param _clubId The ID of the club
+     * @param _dealId The ID of the deal
+     * @param _quantity The number of NFTs to mint
+     */
+    function batchMintDeal(uint256 _clubId, uint256 _dealId, uint256 _quantity) external nonReentrant onlyClubOwner(_clubId) {
+        // Ensure the deal exists and is active
+        Deal storage deal = clubDeals[_clubId][_dealId];
+        require(deal.expiryDate > block.timestamp, "Deal has expired");
+        require(deal.remainingSupply >= _quantity, "Insufficient remaining supply");
+
+        // Mint the NFTs and store them in the contract
+        string memory metadataURI = deal.metadataURI;
+        mintDealsNFT.batchMintNFTs(msg.sender, _clubId, _dealId, metadataURI, _quantity);
+
+        // Update deal status
+        deal.remainingSupply -= _quantity;
 
     }
 

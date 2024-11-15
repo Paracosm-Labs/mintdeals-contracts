@@ -81,6 +81,16 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     }
 
     /**
+     * @notice Update the price oracle address for an existing cToken.
+     * @param _cTokenAddress The address of the cToken contract.
+     * @param _newPriceOracle The new address of the price oracle contract.
+     */
+    function updateCToken(address _cTokenAddress, address _newPriceOracle) external onlyAdmin(msg.sender) {
+        require(address(cTokens[_cTokenAddress].cToken) != address(0), "cToken does not exist");
+        cTokens[_cTokenAddress].priceOracle = IPriceOracle(_newPriceOracle);
+    }
+
+    /**
      * @notice Update the collateral factor.
      * @param newStablecoinFactor The new stablecoin collateral factor percentage (e.g., 70 for 70%).
      * @param newNonStablecoinFactor The new non-stablecoin collateral factor percentage (e.g., 25 for 25%).

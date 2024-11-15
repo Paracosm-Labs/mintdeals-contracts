@@ -139,6 +139,48 @@ contract MintDealsNFT is ERC721, ERC2981, IERC721Enumerable, AdminAuth {
     }
 
     /**
+     * @notice Mints multiple NFTs for a single recipient, club, and deal.
+     * @dev Only callable by an admin.
+     * Uses the admin-configured royalty recipient and percentage.
+     * @param recipient The address of the NFT recipient.
+     * @param clubId The ID of the club associated with the NFTs.
+     * @param dealId The ID of the deal associated with the NFTs.
+     * @param metadataURI The URI containing metadata for the NFTs.
+     * @param quantity The number of NFTs to mint.
+     * @return An array of the newly minted NFT IDs.
+     */
+    function batchMintNFTs(
+        address recipient,
+        uint256 clubId,
+        uint256 dealId,
+        string memory metadataURI,
+        uint256 quantity
+    ) external onlyAdmin(msg.sender) returns (uint256[] memory) {
+        require(quantity > 0, "Quantity must be greater than zero");
+
+        uint256[] memory newTokenIds = new uint256[](quantity);
+
+        for (uint256 i = 0; i < quantity; i++) {
+            uint256 tokenId = nextTokenId++;
+            _mint(recipient, tokenId);
+            _setTokenURI(tokenId, metadataURI);
+            dealIds[tokenId] = dealId;
+
+            // Set the royalty info for this token, using admin-configured values
+            _setTokenRoyalty(tokenId, royaltyRecipient, royaltyPercentage);
+
+            // Add to enumerations
+            _addTokenToAllTokensEnumeration(tokenId);
+            _addTokenToOwnerEnumeration(recipient, tokenId);
+
+            emit NFTMinted(recipient, tokenId, clubId, dealId, metadataURI);
+            newTokenIds[i] = tokenId;
+        }
+
+        return newTokenIds;
+    }
+
+    /**
      * @notice Requests the redemption of an NFT.
      * @dev The NFT owner must call this function to initiate the redemption process.
      * @param tokenId The ID of the NFT to be redeemed.
