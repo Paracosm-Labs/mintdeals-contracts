@@ -50,8 +50,23 @@ MintDeals Core NILE
 //////////////
 MintDeals Core Mainnet
 //////////////
+CreditFacility:
+(base58) TXAmDpkuxFiR9pQpr6ueTLKqLnStmTNfdZ
+https://tronscan.org/#/contract/TXAmDpkuxFiR9pQpr6ueTLKqLnStmTNfdZ
 
-SOON...
+CreditManager:
+(base58) TEKs8fKBRJrYjjoA838kwMx372jC7Df8XX
+https://tronscan.org/#/contract/TEKs8fKBRJrYjjoA838kwMx372jC7Df8XX
+
+MintDealsNFT:
+(base58) TUiCMNsxiKWSqwaWQrTKstjcZQLM6y71zV
+https://tronscan.org/#/contract/TUiCMNsxiKWSqwaWQrTKstjcZQLM6y71zV
+
+ClubDealRegistry:
+(base58) TAyKJT8Gq6oPNxzaPgtNqZCC1xqwX67NwS
+https://tronscan.org/#/contract/TAyKJT8Gq6oPNxzaPgtNqZCC1xqwX67NwS
+
+
 
 
 //////////////

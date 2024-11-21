@@ -103,14 +103,15 @@ contract CreditFacility is AdminAuth, ReentrancyGuard {
     }
 
     /**
-    * @notice Enter markets as collateral (add assets to liquidity calculation).
-    * @param cTokensAddress The address of the cToken to add as collateral.
-    */
-    function enableAsCollateral(address cTokensAddress) external onlyAdmin(msg.sender) {
-        uint result = comptroller.enterMarket(cTokensAddress);
-        require(result == 0, "Failed to enter market as collateral");
+     * @notice Enter markets as collateral (add assets to liquidity calculation).
+     * @param cTokensAddresses The array of cToken addresses to add as collateral.
+     */
+    function enableAsCollateral(address[] memory cTokensAddresses) external onlyAdmin(msg.sender) {
+        uint[] memory results = comptroller.enterMarkets(cTokensAddresses);
+        for (uint i = 0; i < results.length; i++) {
+            require(results[i] == 0, "Failed to enter market as collateral");
+        }
     }
-
 
     /**
     * @notice Supply a specific amount of the underlying asset to JustLend and receive cTokens, 

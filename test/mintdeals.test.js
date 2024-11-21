@@ -1,11 +1,12 @@
 import TronWeb from 'tronweb';
 import { expect } from 'chai';
-import { config } from './nile-config.js';
+// import { config } from './nile-config.js';
+import { config } from './mainnet-config.js';
 import 'dotenv/config';
 
 const tronWeb = new TronWeb({
-  fullHost: "https://nile.trongrid.io",
-  privateKey: process.env.PRIVATE_KEY_NILE
+  fullHost: "https://api.trongrid.io",
+  privateKey: process.env.PRIVATE_KEY_MAINNET,
 });
 
 const USDD_DECIMALS = 18;
@@ -57,7 +58,7 @@ describe('MintDeals Contract Automation', function () {
     // this.timeout(10000);
     
     // console.log('Approving USDD for CreditFacility');
-    // await USDDAddress.approve(config.CreditFacilityAddress,  await toSun(9000, USDD_DECIMALS)).send();
+    // await USDDAddress.approve(config.CreditFacilityAddress,  await toSun(500, USDD_DECIMALS)).send();
     // console.log('USDD approved');
 
     // console.log('Approving USDT for CreditFacility');
@@ -65,19 +66,19 @@ describe('MintDeals Contract Automation', function () {
     // console.log('USDT approved');
 
     // console.log('Approving BTC for CreditFacility');
-    // await BTCAddress.approve(config.CreditFacilityAddress, await toSun(10, BTC_DECIMALS)).send();
+    // await BTCAddress.approve(config.CreditFacilityAddress, await toSun(1, BTC_DECIMALS)).send();
     // console.log('BTC approved');
 
     // console.log('Approving USDD for CreditManager');
-    // await USDDAddress.approve(config.CreditManagerAddress, await toSun(9000, USDD_DECIMALS)).send();
+    // await USDDAddress.approve(config.CreditManagerAddress, await toSun(1000, USDD_DECIMALS)).send();
     // console.log('USDD approved for CreditManager');
 
     // console.log('Approving USDT for CreditManager');
-    // await USDTAddress.approve(config.CreditManagerAddress, await toSun(2000, USDT_DECIMALS)).send();
+    // await USDTAddress.approve(config.CreditManagerAddress, await toSun(1000, USDT_DECIMALS)).send();
     // console.log('USDT approved for CreditManager');
 
     // console.log('Approving BTC for CreditManager');
-    // await BTCAddress.approve(config.CreditManagerAddress, await toSun(10, BTC_DECIMALS)).send();
+    // await BTCAddress.approve(config.CreditManagerAddress, await toSun(1, BTC_DECIMALS)).send();
     // console.log('BTC approved for CreditManager');
 
     // console.log('Approving USDD for ClubDealRegistry');
@@ -109,7 +110,7 @@ describe('MintDeals Contract Automation', function () {
     // this.timeout(10000);
 
     // console.log('Supplying USDD');
-    // await creditFacility.supplyAsset(config.USDDCTokenAddress, await toSun(100, USDD_DECIMALS), config.Beneficiary1).send();
+    // await creditFacility.supplyAsset(config.USDDCTokenAddress, await toSun(1, USDD_DECIMALS), config.Beneficiary1).send();
     // console.log('USDD supplied');
 
     // console.log('Supplying USDT');
@@ -132,17 +133,15 @@ describe('MintDeals Contract Automation', function () {
     // await creditManager.supply(config.BTCAddress, await toSun(1, BTC_DECIMALS)).send();
     // console.log('BTC supplied to Credit Manager');
 
-    // console.log('Enabling USDD as collateral');
-    // await creditFacility.enableAsCollateral(config.USDDCTokenAddress).send();
-    // console.log('USDD enabled as collateral');
+    // // Enable multiple cTokens as collateral
+    // console.log('Enabling multiple assets as collateral');
+    // await creditFacility.enableAsCollateral([
+    //     config.USDDCTokenAddress, 
+    //     config.USDTCTokenAddress, 
+    //     config.BTCCTokenAddress
+    // ]).send();
+    // console.log('Assets enabled as collateral: USDD, USDT, BTC');
 
-    // console.log('Enabling USDT as collateral');
-    // await creditFacility.enableAsCollateral(config.USDTCTokenAddress).send();
-    // console.log('USDT enabled as collateral');
-
-    // console.log('Enabling BTC as collateral');
-    // await creditFacility.enableAsCollateral(config.BTCCTokenAddress).send();
-    // console.log('BTC enabled as collateral');
 
     // console.log('Borrowing USDD');
     // await creditFacility.borrow(config.USDDCTokenAddress, await toSun(5, USDD_DECIMALS)).send();
@@ -243,7 +242,7 @@ describe('MintDeals Contract Automation', function () {
   it('should add a member to the club using USDD  and USDT as the payment tokens', async function () {
     // this.timeout(10000);
   
-    // const memberAddress = 'TLHKdCL7MiwT73rBrq8TXnANZ4VKH1P3kt'; // Member's Tron address
+    // const memberAddress = 'TR5iq6xAxDvPXGm6bY7TzQX1MWmxhuXss5'; // Member's Tron address
   
     // console.log(`Adding member ${memberAddress} to club with USDD as payment token`);
     // await clubDealRegistry.addClubMember(
@@ -314,15 +313,15 @@ describe('MintDeals Contract Automation', function () {
     // console.log(`USDT repaid. Credit Info is now ${creditInfo}`);
   });
   
-  // it('should allow admin to withdraw 1 BTC', async function () {
+  it('should allow admin to withdraw 1 BTC', async function () {
   //   this.timeout(10000);
   
-  //   console.log('Admin withdrawing 1 BTC');
-  //   await creditManager.withdraw(config.BTCAddress, await toSun(1, BTC_DECIMALS)).send();
-  //   await creditManager.updateGlobalMaxCreditLimit(config.BTCCTokenAddress).send();
-  //   const globalCreditLimit = await creditManager.globalMaxCreditLimit().call();
-  //   console.log(`1 BTC withdrawn by admin. Global credit is now ${globalCreditLimit.toString()}`);
-  // });
+    // console.log('Admin withdrawing 1 BTC');
+    // await creditManager.withdraw(config.BTCAddress, await toSun(1, BTC_DECIMALS)).send();
+    // await creditManager.updateGlobalMaxCreditLimit(config.BTCCTokenAddress).send();
+    // const globalCreditLimit = await creditManager.globalMaxCreditLimit().call();
+    // console.log(`1 BTC withdrawn by admin. Global credit is now ${globalCreditLimit.toString()}`);
+  });
 
 
 
